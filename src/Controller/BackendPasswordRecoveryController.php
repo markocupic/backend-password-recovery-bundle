@@ -10,7 +10,7 @@
  * @license LGPL-3.0+
  */
 
-namespace Markocupic\BackendPasswordRecovery\Controller;
+namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Contao\BackendAlerts;
 use Contao\BackendConfirm;
