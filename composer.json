@@ -1,5 +1,5 @@
 {
-  "name":"markocupic/backend-password-recovery",
+  "name":"markocupic/backend-password-recovery-bundle",
   "description":"Contao Backend Password Recovery Module",
   "keywords":["contao", "Backend Password Recovery"],
   "type":"contao-module",
@@ -13,8 +13,8 @@
     }
   ],
   "support":{
-    "issues":"https://github.com/markocupic/backend-password-recovery/issues",
-    "source":"https://github.com/markocupic/backend-password-recovery"
+    "issues":"https://github.com/markocupic/backend-password-recovery-bundle/issues",
+    "source":"https://github.com/markocupic/backend-password-recovery-bundle"
   },
   "require":{
     "php":">=7.0",
