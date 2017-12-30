@@ -19,7 +19,8 @@ $GLOBALS['TL_LANG']['MSC']['newPassword'] = "Bitte geben Sie Ihr neues Passwort 
 $GLOBALS['TL_LANG']['MSC']['beLogin'] = "Contao Backend-Login";
 $GLOBALS['TL_LANG']['MSC']['pwrecovery'] = "Passwort zur&uuml;cksetzen";
 $GLOBALS['TL_LANG']['MSC']['recoverBT'] = "Passwort zur&uuml;cksetzen";
-$GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess'] = "Sie erhalten nun eine E-Mail mit Hinweisen um Ihr Passwort zu &auml;ndern.";
+$GLOBALS['TL_LANG']['MSC']['pwrecoveryLinkSuccessfullySent'] = "Sie erhalten nun eine E-Mail mit Hinweisen um Ihr Passwort zu &auml;ndern.";
+$GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess'] = 'Sie haben Ihr Passwort erfolgreich wiederhergestellt. Sie k&ouml;nnen sich nun mit dem neuen Passwort anmelden.';
 $GLOBALS['TL_LANG']['MSC']['pwrecoveryText']['0'] = "Ihre Passwort-Anforderung auf %s";
 $GLOBALS['TL_LANG']['MSC']['pwrecoveryText']['1'] = "Sie haben ein neues Passwort für %s angefordert.\n\nBitte öffnen Sie diesen Link %s um das neue Passwort zur&uuml;ckzusetzen.\n\nFalls Sie diese E-Mail nicht angefordert haben, kontaktieren Sie bitte den Administrator der Webseite.\n\n\n\n---------------------------------\n\nDies ist eine automatisch generierte Nachricht. Bitte antworten Sie nicht darauf.";
 

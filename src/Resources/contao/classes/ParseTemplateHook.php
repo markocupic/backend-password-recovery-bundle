@@ -34,12 +34,18 @@ class ParseTemplateHook
             {
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
                 $locale = $request->getLocale();
-                $url =  sprintf($GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'], $locale);
+                $url = sprintf($GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'], $locale);
 
                 // Show reset password link if login has failed
-                if (strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['invalidLogin'],0,10)) !== false || strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['accountLocked'],0,10)) !== false)
+                if (strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['invalidLogin'], 0, 10)) !== false || strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['accountLocked'], 0, 10)) !== false)
                 {
                     $objTemplate->messages = $objTemplate->messages . '<div class="tl_message"><p class="tl_error">' . $url . '</p></div>';
+                }
+
+                if ($_SESSION['pw_recovery']['status'] === 'success')
+                {
+                    unset($_SESSION['pw_recovery']);
+                    $objTemplate->messages = $objTemplate->messages . '<div class="tl_message"><p class="tl_confirm">' . $GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess'] . '</p></div>';
                 }
             }
         }

@@ -98,7 +98,7 @@ class RequirePasswordRecoveryLink extends Backend
                 $objEmail->text = sprintf($GLOBALS['TL_LANG']['MSC']['pwrecoveryText'][1], Environment::get('base'), $strLink);
                 $objEmail->sendTo($objUser->email);
                 System::log('Password for user ' . $objUser->username . ' has been reset.', __METHOD__, TL_GENERAL);
-                Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess']);
+                Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwrecoveryLinkSuccessfullySent']);
             }
             else
             {

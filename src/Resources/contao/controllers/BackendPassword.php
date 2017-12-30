@@ -164,11 +164,12 @@ class BackendPassword extends Backend
                     $objUser->save();
 
                     Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pw_changed']);
+                    $_SESSION['pw_recovery']['status'] = 'success';
                     $this->redirect('contao/login');
                 }
             }
 
-            $this->reload();
+            //$this->reload();
         }
 
         $objTemplate->theme = Backend::getTheme();
