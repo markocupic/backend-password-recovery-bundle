@@ -1,5 +1,4 @@
 backend_password_recovery:
     resource: "@MarkocupicBackendPasswordRecoveryBundle/Controller"
     type: annotation
-    defaults:
-        _scope: backend
+

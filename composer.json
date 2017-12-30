@@ -28,6 +28,7 @@
       "Markocupic\\BackendPasswordRecoveryBundle\\": "src/"
     },
     "classmap": [
+      "src/Resources/contao"
     ]
   },
   "extra": {
