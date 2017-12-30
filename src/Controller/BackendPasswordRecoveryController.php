@@ -1,19 +1,18 @@
 <?php
 
-
-
-/*
- * This file is part of Contao.
+/**
+ * Backend Password Reoovery Bundle for Contao CMS
  *
- * Copyright (c) 2005-2017 Leo Feyer
+ * Copyright (C) 2005-2018 Marko Cupic
  *
- * @license LGPL-3.0+
+ * @package Backend Password Recovery Bundle
+ * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
+ *
  */
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 
-use Contao\BackendMain;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Markocupic\BackendPasswordRecoveryBundle\BackendPassword;
+use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
+
 
 /**
  * Class BackendPasswordRecoveryController
@@ -29,8 +30,6 @@ use Markocupic\BackendPasswordRecoveryBundle\BackendPassword;
 class BackendPasswordRecoveryController extends Controller
 {
 
-
-
     /**
      * @return Response
      *
@@ -38,11 +37,21 @@ class BackendPasswordRecoveryController extends Controller
      */
     public function mainAction($slug)
     {
-        $this->container->get('contao.framework')->initialize();
+        if ($slug == 'requirepasswordrecoverylink')
+        {
+            $this->container->get('contao.framework')->initialize();
+            $controller = new RequirePasswordRecoveryLink($slug);
+            return $controller->run();
+        }
 
-        $controller = new BackendPassword($slug);
+        if ($slug == 'renewpassword')
+        {
+            $this->container->get('contao.framework')->initialize();
+            $controller = new BackendPassword($slug);
+            return $controller->run();
+        }
 
-        return $controller->run();
+
     }
 
 }

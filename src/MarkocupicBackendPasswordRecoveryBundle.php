@@ -1,11 +1,13 @@
 <?php
 
-/*
- * This file is part of Contao.
+/**
+ * Backend Password Reoovery Bundle for Contao CMS
  *
- * Copyright (c) 2005-2016 Leo Feyer
+ * Copyright (C) 2005-2018 Marko Cupic
  *
- * @license LGPL-3.0+
+ * @package Backend Password Recovery Bundle
+ * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
+ *
  */
 
 namespace Markocupic\BackendPasswordRecoveryBundle;

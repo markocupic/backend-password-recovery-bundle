@@ -1,0 +1,126 @@
+<?php
+
+/**
+ * Backend Password Reoovery Bundle for Contao CMS
+ *
+ * Copyright (C) 2005-2018 Marko Cupic
+ *
+ * @package Backend Password Recovery Bundle
+ * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
+ *
+ */
+
+namespace Markocupic\BackendPasswordRecoveryBundle;
+
+
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Contao\System;
+use Contao\BackendTemplate;
+use Contao\Database;
+use Contao\Message;
+use Contao\Backend;
+use Contao\Environment;
+use Contao\StringUtil;
+use Contao\Config;
+
+/**
+ * Class RequirePasswordRecoveryLink
+ * @package Markocupic\BackendPasswordRecoveryBundle
+ */
+class RequirePasswordRecoveryLink extends Backend
+{
+    protected $locale;
+
+
+	/**
+	 * Initialize the controller
+	 *
+	 * 1. Import the user
+	 * 2. Call the parent constructor
+	 * 3. Authenticate the user
+	 * 4. Load the language files
+	 * DO NOT CHANGE THIS ORDER!
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+        if($request->query->get('_locale') != '')
+        {
+            $request->setLocale($request->query->get('_locale'));
+        }
+
+		System::loadLanguageFile('default',$request->getLocale());
+		System::loadLanguageFile('modules',$request->getLocale());
+		$this->locale = $request->getLocale();
+	}
+
+
+	/**
+	 * Run the controller and parse the password template
+	 *
+	 * @return Response
+	 */
+	public function run()
+	{
+		/** @var Request $request */
+		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+        Message::reset();
+
+		/** @var BackendTemplate|object $objTemplate */
+		$objTemplate = new BackendTemplate('be_require_password_link');
+
+        if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('usernameOrEmail') != '')
+        {
+            $time = time();
+            $usernameOrEmail = $request->request->get('usernameOrEmail');
+            $objUser = Database::getInstance()->prepare("SELECT * FROM tl_user WHERE (email=? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")->limit(1)->execute($usernameOrEmail, $usernameOrEmail);
+
+            if ($objUser->numRows)
+            {
+
+                $token = md5(uniqid(mt_rand(), true));
+
+                Database::getInstance()->prepare("UPDATE tl_user SET activation=? WHERE id=?")->execute($token, $objUser->id);
+
+                $strLink = Environment::get('base') . 'backendpasswordrecovery/renewpassword?token=' . $token . '&_locale=' . $this->locale;
+
+                // Send mail
+                $objEmail = new Email();
+                $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
+
+                $objEmail->subject = sprintf($GLOBALS['TL_LANG']['MSC']['pwrecoveryText'][0], Environment::get('base'));
+                $objEmail->text = sprintf($GLOBALS['TL_LANG']['MSC']['pwrecoveryText'][1], Environment::get('base'), $strLink);
+                $objEmail->sendTo($objUser->email);
+                System::log('Password for user ' . $objUser->username . ' has been reset.', __METHOD__, TL_GENERAL);
+                Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess']);
+            }
+            else
+            {
+                Message::addError($GLOBALS['TL_LANG']['ERR']['pwrecoveryFailed']);
+            }
+
+        }
+
+
+		$objTemplate->theme = Backend::getTheme();
+		$objTemplate->messages = Message::generate();
+		$objTemplate->base = Environment::get('base');
+		$objTemplate->language = $GLOBALS['TL_LANGUAGE'];
+		$objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline']);
+		$objTemplate->charset = Config::get('characterSet');
+		$objTemplate->action = ampersand(Environment::get('request'));
+		$objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'];
+		//$objTemplate->explain = $GLOBALS['TL_LANG']['MSC']['pw_change'];
+		$objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
+		$objTemplate->usernameOrEmail = $GLOBALS['TL_LANG']['MSC']['emailOrUsername'];
+		$objTemplate->confirm = $GLOBALS['TL_LANG']['MSC']['confirm'][0];
+        $objTemplate->feLink = $GLOBALS['TL_LANG']['MSC']['feLink'];
+
+
+        return $objTemplate->getResponse();
+	}
+}

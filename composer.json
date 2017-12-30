@@ -1,23 +1,27 @@
 {
-  "name":"markocupic/backend-password-recovery-bundle",
-  "description":"Contao Backend Password Recovery Module",
-  "keywords":["contao", "Backend Password Recovery"],
-  "type":"contao-module",
-  "license":"LGPL-3.0+",
-  "authors":[
+  "name": "markocupic/backend-password-recovery-bundle",
+  "description": "Contao Backend Password Recovery Module",
+  "keywords": [
+    "contao",
+    "Backend",
+    "Password Recovery"
+  ],
+  "type": "contao-module",
+  "license": "LGPL-3.0+",
+  "authors": [
     {
-      "name":"Marko Cupic",
-      "email":"m.cupic@gmx.ch",
-      "homepage":"https://github.com/markocupic/backend-password-recovery-bundle",
-      "role":"Developer"
+      "name": "Marko Cupic",
+      "email": "m.cupic@gmx.ch",
+      "homepage": "https://github.com/markocupic/backend-password-recovery-bundle",
+      "role": "Developer"
     }
   ],
-  "support":{
-    "issues":"https://github.com/markocupic/backend-password-recovery-bundle/issues",
-    "source":"https://github.com/markocupic/backend-password-recovery-bundle"
+  "support": {
+    "issues": "https://github.com/markocupic/backend-password-recovery-bundle/issues",
+    "source": "https://github.com/markocupic/backend-password-recovery-bundle"
   },
-  "require":{
-    "php":">=7.0",
+  "require": {
+    "php": ">=7.0",
     "contao/core-bundle": ">=4.4"
   },
   "conflict": {
@@ -29,10 +33,15 @@
     },
     "classmap": [
       "src/Resources/contao"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/config/",
+      "src/Resources/contao/dca/",
+      "src/Resources/contao/languages/",
+      "src/Resources/contao/templates/"
     ]
   },
   "extra": {
     "contao-manager-plugin": "Markocupic\\BackendPasswordRecoveryBundle\\ContaoManager\\Plugin"
   }
-
 }
