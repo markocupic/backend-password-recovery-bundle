@@ -23,6 +23,8 @@ use Contao\Backend;
 use Contao\Environment;
 use Contao\StringUtil;
 use Contao\Config;
+use Contao\Email;
+
 
 /**
  * Class RequirePasswordRecoveryLink
@@ -114,7 +116,7 @@ class RequirePasswordRecoveryLink extends Backend
 		$objTemplate->charset = Config::get('characterSet');
 		$objTemplate->action = ampersand(Environment::get('request'));
 		$objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'];
-		//$objTemplate->explain = $GLOBALS['TL_LANG']['MSC']['pw_change'];
+		$objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
 		$objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
 		$objTemplate->usernameOrEmail = $GLOBALS['TL_LANG']['MSC']['emailOrUsername'];
 		$objTemplate->confirm = $GLOBALS['TL_LANG']['MSC']['confirm'][0];
