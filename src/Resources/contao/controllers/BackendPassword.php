@@ -61,7 +61,7 @@ class BackendPassword extends Backend
             throw new AccessDeniedException('No token found in the request stack.');
         }
 
-        // Search user which fits to the token
+        // Search the user that fits to the token
         $this->User = Database::getInstance()->prepare("SELECT * FROM tl_user WHERE activation=? AND disable=? AND (start=? OR start<?) AND (stop=? OR stop>?)")
             ->limit(1)
             ->execute(
@@ -78,14 +78,14 @@ class BackendPassword extends Backend
             throw new AccessDeniedException('User not found. Password recovery failed.');
         }
 
-        if($request->query->get('_locale') != '')
+        if ($request->query->get('_locale') != '')
         {
             $request->setLocale($request->query->get('_locale'));
         }
 
         // Get language from the request query and load language file
-        System::loadLanguageFile('default',$request->getLocale());
-        System::loadLanguageFile('modules',$request->getLocale());
+        System::loadLanguageFile('default', $request->getLocale());
+        System::loadLanguageFile('modules', $request->getLocale());
 
     }
 
@@ -169,7 +169,6 @@ class BackendPassword extends Backend
                 }
             }
 
-            //$this->reload();
         }
 
         $objTemplate->theme = Backend::getTheme();

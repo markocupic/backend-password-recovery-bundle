@@ -14,7 +14,7 @@
 /**
  * Hooks
  */
-if(TL_MODE == 'BE')
+if (TL_MODE == 'BE')
 {
     // Inject password recovery link to default login form, if the login process fails.
     $GLOBALS['TL_HOOKS']['parseTemplate'][] = array('Markocupic\BackendPasswordRecoveryBundle\ParseTemplateHook', 'addPwRecoveryLinktoBackendLoginForm');
