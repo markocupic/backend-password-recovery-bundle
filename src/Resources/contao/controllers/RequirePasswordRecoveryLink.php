@@ -35,45 +35,44 @@ class RequirePasswordRecoveryLink extends Backend
     protected $locale;
 
 
-	/**
-	 * Initialize the controller
-	 *
-	 * 1. Import the user
-	 * 2. Call the parent constructor
-	 * 3. Authenticate the user
-	 * 4. Load the language files
-	 * DO NOT CHANGE THIS ORDER!
-	 */
-	public function __construct()
-	{
-		parent::__construct();
+    /**
+     * Initialize the controller
+     *
+     * 1. Import the user
+     * 2. Call the parent constructor
+     * 3. Authenticate the user
+     * 4. Load the language files
+     * DO NOT CHANGE THIS ORDER!
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
-        if($request->query->get('_locale') != '')
+        if ($request->query->get('_locale') != '')
         {
             $request->setLocale($request->query->get('_locale'));
         }
 
-		System::loadLanguageFile('default',$request->getLocale());
-		System::loadLanguageFile('modules',$request->getLocale());
-		$this->locale = $request->getLocale();
-	}
+        System::loadLanguageFile('default', $request->getLocale());
+        System::loadLanguageFile('modules', $request->getLocale());
+        $this->locale = $request->getLocale();
+    }
 
 
-	/**
-	 * Run the controller and parse the password template
-	 *
-	 * @return Response
-	 */
-	public function run()
-	{
-		/** @var Request $request */
-		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
-
+    /**
+     * Run the controller and parse the password template
+     *
+     * @return Response
+     */
+    public function run()
+    {
+        /** @var Request $request */
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
         Message::reset();
 
-		/** @var BackendTemplate|object $objTemplate */
-		$objTemplate = new BackendTemplate('be_require_password_link');
+        /** @var BackendTemplate|object $objTemplate */
+        $objTemplate = new BackendTemplate('be_require_password_link');
 
         if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('usernameOrEmail') != '')
         {
@@ -108,21 +107,21 @@ class RequirePasswordRecoveryLink extends Backend
         }
 
 
-		$objTemplate->theme = Backend::getTheme();
-		$objTemplate->messages = Message::generate();
-		$objTemplate->base = Environment::get('base');
-		$objTemplate->language = $GLOBALS['TL_LANGUAGE'];
-		$objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline']);
-		$objTemplate->charset = Config::get('characterSet');
-		$objTemplate->action = ampersand(Environment::get('request'));
-		$objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'];
-		$objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
-		$objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
-		$objTemplate->usernameOrEmail = $GLOBALS['TL_LANG']['MSC']['emailOrUsername'];
-		$objTemplate->confirm = $GLOBALS['TL_LANG']['MSC']['confirm'][0];
+        $objTemplate->theme = Backend::getTheme();
+        $objTemplate->messages = Message::generate();
+        $objTemplate->base = Environment::get('base');
+        $objTemplate->language = $GLOBALS['TL_LANGUAGE'];
+        $objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline']);
+        $objTemplate->charset = Config::get('characterSet');
+        $objTemplate->action = ampersand(Environment::get('request'));
+        $objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'];
+        $objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
+        $objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
+        $objTemplate->usernameOrEmail = $GLOBALS['TL_LANG']['MSC']['emailOrUsername'];
+        $objTemplate->confirm = $GLOBALS['TL_LANG']['MSC']['confirm'][0];
         $objTemplate->feLink = $GLOBALS['TL_LANG']['MSC']['feLink'];
 
 
         return $objTemplate->getResponse();
-	}
+    }
 }
