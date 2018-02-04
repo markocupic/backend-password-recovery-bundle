@@ -32,6 +32,9 @@ class ParseTemplateHook
         {
             if ($objTemplate->getName() == 'be_login')
             {
+                // Start session
+                session_start();
+
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
                 $locale = $request->getLocale();
                 $url = sprintf($GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'], $locale);
