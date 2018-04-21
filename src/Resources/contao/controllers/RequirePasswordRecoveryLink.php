@@ -13,18 +13,17 @@
 namespace Markocupic\BackendPasswordRecoveryBundle;
 
 
+use Contao\Backend;
+use Contao\BackendTemplate;
+use Contao\Config;
+use Contao\Database;
+use Contao\Email;
+use Contao\Environment;
+use Contao\Message;
+use Contao\StringUtil;
+use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Contao\System;
-use Contao\BackendTemplate;
-use Contao\Database;
-use Contao\Message;
-use Contao\Backend;
-use Contao\Environment;
-use Contao\StringUtil;
-use Contao\Config;
-use Contao\Email;
-use Contao\Input;
 
 /**
  * Class RequirePasswordRecoveryLink
@@ -88,10 +87,9 @@ class RequirePasswordRecoveryLink extends Backend
                     $objImport = System::importStatic($callback[0], 'objImport', true);
                     $blnLoaded = $objImport->{$callback[1]}($username, 'nopassword', 'tl_user');
 
-                    // Load successfull
                     if ($blnLoaded === true)
                     {
-                        $username = Input::post('username');
+                        $username = $request->request->get('username');
                         break;
                     }
                 }
@@ -103,10 +101,13 @@ class RequirePasswordRecoveryLink extends Backend
             if ($objUser->numRows)
             {
 
+                // Set renew password token
                 $token = md5(uniqid(mt_rand(), true));
 
+                // Write token to db
                 Database::getInstance()->prepare("UPDATE tl_user SET activation=? WHERE id=?")->execute($token, $objUser->id);
 
+                // Generate renew password link
                 $strLink = Environment::get('base') . 'backendpasswordrecovery/renewpassword?token=' . $token . '&_locale=' . $this->locale;
 
                 // Send mail
