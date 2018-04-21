@@ -51,6 +51,9 @@ class BackendPassword extends Backend
     {
         parent::__construct();
 
+        // Start session
+        session_start();
+
         /** @var Request $request */
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 

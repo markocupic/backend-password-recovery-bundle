@@ -24,7 +24,7 @@ use Contao\Environment;
 use Contao\StringUtil;
 use Contao\Config;
 use Contao\Email;
-
+use Contao\Input;
 
 /**
  * Class RequirePasswordRecoveryLink
@@ -74,12 +74,32 @@ class RequirePasswordRecoveryLink extends Backend
         /** @var BackendTemplate|object $objTemplate */
         $objTemplate = new BackendTemplate('be_require_password_link');
 
-        if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('usernameOrEmail') != '')
+        if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('username') != '')
         {
-            $time = time();
-            $usernameOrEmail = $request->request->get('usernameOrEmail');
-            $objUser = Database::getInstance()->prepare("SELECT * FROM tl_user WHERE (email=? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")->limit(1)->execute($usernameOrEmail, $usernameOrEmail);
 
+            $username = $request->request->get('username');
+
+            // Loading the importUser Hook
+            if (!empty($GLOBALS['TL_HOOKS']['importUser']) && \is_array($GLOBALS['TL_HOOKS']['importUser']))
+            {
+                @trigger_error('Using the "importUser" hook has been deprecated and will no longer work in Contao 5.0. Use the contao.import_user event instead.', E_USER_DEPRECATED);
+                foreach ($GLOBALS['TL_HOOKS']['importUser'] as $callback)
+                {
+                    $objImport = System::importStatic($callback[0], 'objImport', true);
+                    $blnLoaded = $objImport->{$callback[1]}($username, 'nopassword', 'tl_user');
+
+                    // Load successfull
+                    if ($blnLoaded === true)
+                    {
+                        $username = Input::post('username');
+                        break;
+                    }
+                }
+            }
+
+
+            $time = time();
+            $objUser = Database::getInstance()->prepare("SELECT * FROM tl_user WHERE (email=? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")->limit(1)->execute($username, $username);
             if ($objUser->numRows)
             {
 
