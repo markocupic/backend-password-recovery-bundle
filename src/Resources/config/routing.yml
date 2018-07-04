@@ -1,4 +1,13 @@
-backend_password_recovery:
-    resource: "@MarkocupicBackendPasswordRecoveryBundle/Controller"
-    type: annotation
+backend_password_recovery_requirepasswordrecoverylink:
+    path: /backendpasswordrecovery/requirepasswordrecoverylink
+    defaults:
+        _scope: backend
+        _controller: "MarkocupicBackendPasswordRecoveryBundle:BackendPasswordRecovery:requirepasswordrecoverylink"
+        _token_check: true
 
+backend_password_recovery_renewpassword:
+    path: /backendpasswordrecovery/renewpassword
+    defaults:
+        _scope: backend
+        _controller: "MarkocupicBackendPasswordRecoveryBundle:BackendPasswordRecovery:renewpassword"
+        _token_check: true

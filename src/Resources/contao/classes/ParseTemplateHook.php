@@ -26,8 +26,9 @@ class ParseTemplateHook
      * ParseTemplateHook
      * @param $objTemplate
      */
-    public function addPwRecoveryLinktoBackendLoginForm($objTemplate)
+    public function addPwRecoveryLinkToBackendLoginForm($objTemplate)
     {
+
         if (TL_MODE == 'BE')
         {
             if ($objTemplate->getName() == 'be_login')
