@@ -1,0 +1,21 @@
+.tl_pw_recovery {
+    padding: 20px 45px;
+}
+
+.tl_pw_recovery > p {
+    border-top: 1px solid #ffffff;
+    padding-top: 20px;
+}
+
+.tl_pw_recovery a.tl_submit.password_recovery_button {
+    background-color: #FF8C00;
+    border: transparent;
+    color: #fff;
+    margin-top: 15px;
+    display: block;
+    padding: 8px 13px;
+}
+
+.tl_pw_recovery a.tl_submit.password_recovery_button:hover {
+    background-color: #ff0000;
+}
