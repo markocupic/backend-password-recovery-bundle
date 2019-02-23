@@ -2,12 +2,12 @@ backend_password_recovery_requirepasswordrecoverylink:
     path: /backendpasswordrecovery/requirepasswordrecoverylink
     defaults:
         _scope: backend
-        _controller: "Markocupic/BackendPasswordRecoveryBundle/Controller/BackendPasswordRecoveryController::requirepasswordrecoverylinkAction"
+        _controller: Markocupic\BackendPasswordRecoveryBundle\Controller\BackendPasswordRecoveryController::requirepasswordrecoverylinkAction
         _token_check: true
 
 backend_password_recovery_renewpassword:
     path: /backendpasswordrecovery/renewpassword
     defaults:
         _scope: backend
-        _controller: "Markocupic/BackendPasswordRecoveryBundle/Controller/BackendPasswordRecoveryController::renewpasswordAction"
+        _controller: Markocupic\BackendPasswordRecoveryBundle\Controller\BackendPasswordRecoveryController::renewpasswordAction
         _token_check: true
