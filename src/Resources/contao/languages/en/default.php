@@ -15,7 +15,7 @@
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwrecoveryFailed'] = 'No user found with this username or email address.';
-$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = '<div class="tl_pw_recovery"><p>Go to<br><a class="tl_submit password_recovery_button" href="backendpasswordrecovery/requirepasswordrecoverylink?_locale=%s">password recovery?</a></p></div>';
+$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = '<div class="tl_pw_recovery"><p>Go to<br><a class="tl_submit password_recovery_button" href="%s">password recovery?</a></p></div>';
 
 
 /**

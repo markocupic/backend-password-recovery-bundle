@@ -13,6 +13,7 @@
 
 namespace Markocupic\BackendPasswordRecoveryBundle;
 
+use Contao\Controller;
 use Contao\System;
 
 /**
@@ -29,16 +30,18 @@ class ParseTemplateHook
     public function addPwRecoveryLinkToBackendLoginForm($objTemplate)
     {
 
-        if (TL_MODE == 'BE')
+        if (TL_MODE === 'BE')
         {
-            if ($objTemplate->getName() == 'be_login')
+            if ($objTemplate->getName() === 'be_login')
             {
                 // Start session
                 session_start();
 
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
                 $locale = $request->getLocale();
-                $url = sprintf($GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'], $locale);
+                $envPath = Controller::replaceInsertTags('{{env::path}}');
+                $href = sprintf('%sbackendpasswordrecovery/requirepasswordrecoverylink?_locale=%s', $envPath, $locale);
+                $url = sprintf($GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'], $href);
 
                 // Show reset password link if login has failed
                 if (strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['invalidLogin'], 0, 10)) !== false || strpos($objTemplate->messages, substr($GLOBALS['TL_LANG']['ERR']['accountLocked'], 0, 10)) !== false)

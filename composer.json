@@ -22,7 +22,7 @@
   },
   "require": {
     "php": ">=7.0",
-    "contao/core-bundle": ">=4.4"
+    "contao/core-bundle": ">=4.7"
   },
   "conflict": {
     "contao/core": "3.*"

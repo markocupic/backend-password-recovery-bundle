@@ -3,19 +3,28 @@
 }
 
 .tl_pw_recovery > p {
-    border-top: 1px solid #ffffff;
+    border-top: 2px solid #ffffff;
     padding-top: 20px;
 }
 
 .tl_pw_recovery a.tl_submit.password_recovery_button {
-    background-color: #FF8C00;
+    background-color: #f46c07;
     border: transparent;
     color: #fff;
     margin-top: 15px;
     display: block;
-    padding: 8px 13px;
+    padding: 12px 13px;
+    height: auto;
 }
 
 .tl_pw_recovery a.tl_submit.password_recovery_button:hover {
-    background-color: #ff0000;
+    background-color: #0f1c26;
+}
+
+.backend-password-recovery .widget{
+    padding-top: 15px;
+}
+
+.backend-password-recovery .widget input.tl_text{
+    margin-top: 10px;
 }

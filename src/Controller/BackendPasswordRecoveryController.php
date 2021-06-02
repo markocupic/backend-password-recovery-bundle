@@ -15,9 +15,9 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Markocupic\BackendPasswordRecoveryBundle\BackendPassword;
 use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 
 
@@ -27,7 +27,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
  *
  * @Route(defaults={"_scope" = "backend", "_token_check" = true})
  */
-class BackendPasswordRecoveryController extends Controller
+class BackendPasswordRecoveryController extends AbstractController
 {
 
     /**
