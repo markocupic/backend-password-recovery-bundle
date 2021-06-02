@@ -51,17 +51,23 @@ class ParseTemplate
     {
         if (TL_MODE === 'BE') {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
-
-              // Show reset password link if login has failed
+                // Show reset password link if login has failed
                 if (false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
                     $locale = $this->requestStack->getMasterRequest()->getLocale();
-                    $href = sprintf('backendpasswordrecovery/requirepasswordrecoverylink?_locale=%s', $locale);
+
+                    $href = sprintf(
+                        'backendpasswordrecovery/requirepasswordrecoverylink?_locale=%s',
+                        $locale
+                    );
 
                     $objTemplate->messages .= $this->twig->render(
-                      '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
-                      [
-                          'password_recovery_button' => sprintf($this->translator->trans('ERR.invalidBackendLogin', [], 'contao_default'), $href),
-                      ]
+                        '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
+                        [
+                            'password_recovery_button' => sprintf(
+                              $this->translator->trans('ERR.invalidBackendLogin', [], 'contao_default'),
+                              $href
+                            ),
+                        ]
                     );
                 }
 
@@ -69,12 +75,12 @@ class ParseTemplate
                     $arrBag = $this->session->get('pw_recovery');
 
                     if (\is_array($arrBag) && isset($arrBag['status']) && 'success' === $arrBag['status']) {
-                      $this->session->remove('pw_recovery');
+                        $this->session->remove('pw_recovery');
 
-                      $objTemplate->messages .= $this->twig->render(
+                        $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_confirmation.html.twig',
                         [
-                          'confirmation_text' => $this->translator->trans('MSC.pwrecoverySuccess', [], 'contao_default'),
+                            'confirmation_text' => $this->translator->trans('MSC.pwrecoverySuccess', [], 'contao_default'),
                         ]
                       );
                     }
