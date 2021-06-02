@@ -1,26 +1,20 @@
 <?php
 
-/**
- * Backend Password Reoovery Bundle for Contao CMS
+/*
+ * This file is part of Backend Password Recovery Bundle.
  *
- * Copyright (C) 2005-2018 Marko Cupic
- *
- * @package Backend Password Recovery Bundle
- * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
- *
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
-
 
 /**
  * Hooks
  */
-if (TL_MODE == 'BE')
+if (TL_MODE === 'BE')
 {
-    // Inject password recovery link to default login form, if the login process fails.
-    $GLOBALS['TL_HOOKS']['parseTemplate'][] = array('Markocupic\BackendPasswordRecoveryBundle\ParseTemplateHook', 'addPwRecoveryLinkToBackendLoginForm');
-
-    // Load the backend stylesheet
-    $GLOBALS['TL_CSS'][] = 'bundles/markocupicbackendpasswordrecovery/stylesheet.css|static';
-
+	// Load the backend stylesheet
+	$GLOBALS['TL_CSS'][] = 'bundles/markocupicbackendpasswordrecovery/stylesheet.css|static';
 }
-

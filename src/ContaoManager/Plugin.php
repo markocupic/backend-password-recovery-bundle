@@ -1,21 +1,25 @@
 <?php
 
-/**
- * Backend Password Reoovery Bundle for Contao CMS
+declare(strict_types=1);
+
+/*
+ * This file is part of Backend Password Recovery Bundle.
  *
- * Copyright (C) 2005-2018 Marko Cupic
- *
- * @package Backend Password Recovery Bundle
- * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
- *
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
 namespace Markocupic\BackendPasswordRecoveryBundle\ContaoManager;
 
-use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
+use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
+use Markocupic\BackendPasswordRecoveryBundle\MarkocupicBackendPasswordRecoveryBundle;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -32,8 +36,8 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
     public function getBundles(ParserInterface $parser)
     {
         return [
-            BundleConfig::create('Markocupic\BackendPasswordRecoveryBundle\MarkocupicBackendPasswordRecoveryBundle')
-                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle'])
+            BundleConfig::create(MarkocupicBackendPasswordRecoveryBundle::class)
+                ->setLoadAfter([ContaoCoreBundle::class]),
         ];
     }
 
@@ -43,7 +47,8 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
     public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel)
     {
         return $resolver
-            ->resolve(__DIR__ . '/../Resources/config/routing.yml')
-            ->load(__DIR__ . '/../Resources/config/routing.yml');
+            ->resolve(__DIR__.'/../Resources/config/routing.yml')
+            ->load(__DIR__.'/../Resources/config/routing.yml')
+        ;
     }
 }

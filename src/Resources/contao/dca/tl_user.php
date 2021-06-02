@@ -1,15 +1,15 @@
 <?php
 
-/**
- * Contao Open Source CMS
+/*
+ * This file is part of Backend Password Recovery Bundle.
  *
- * Copyright (C) 2005-2015 Leo Feyer
- *
- * @package Backend Password
- * @link    http://www.contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['activation'] = array(
-       'sql' => "varchar(64) NOT NULL default ''"
+	'sql' => "varchar(64) NOT NULL default ''"
 );

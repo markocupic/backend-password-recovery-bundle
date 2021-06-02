@@ -1,0 +1,14 @@
+services:
+
+  # CONTAO HOOKS:
+  # Contao add parse template hook
+  Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks\ParseTemplate:
+    public: true
+    arguments:
+      - "@contao.framework"
+      - "@request_stack"
+      - "@twig"
+      - "@translator"
+      - "@session"
+    tags:
+      - { name: contao.hook, hook: parseTemplate, method: addPwRecoveryLinkToBackendLoginForm }

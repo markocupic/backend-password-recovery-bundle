@@ -1,17 +1,18 @@
 <?php
 
-/**
- * Backend Password Reoovery Bundle for Contao CMS
+declare(strict_types=1);
+
+/*
+ * This file is part of Backend Password Recovery Bundle.
  *
- * Copyright (C) 2005-2018 Marko Cupic
- *
- * @package Backend Password Recovery Bundle
- * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
- *
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
-
 
 use Markocupic\BackendPasswordRecoveryBundle\BackendPassword;
 use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
@@ -19,41 +20,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-
 /**
- * Class BackendPasswordRecoveryController
- * @package Markocupic\BackendPasswordRecovery\Controller
+ * Class BackendPasswordRecoveryController.
  *
  * @Route(defaults={"_scope" = "backend", "_token_check" = true})
  */
 class BackendPasswordRecoveryController extends AbstractController
 {
-
     /**
-     *
-     * @return Response
-     *
      * @Route("/backendpasswordrecovery/requirepasswordrecoverylink", name="backend_password_recovery_requirepasswordrecoverylink")
      */
     public function requirepasswordrecoverylinkAction(): Response
     {
         $this->container->get('contao.framework')->initialize();
         $controller = new RequirePasswordRecoveryLink();
+
         return $controller->run();
     }
 
     /**
-     *
-     * @return Response
-     *
      * @Route("/backendpasswordrecovery/renewpassword", name="backend_password_recovery_renewpassword")
      */
     public function renewpasswordAction(): Response
     {
         $this->container->get('contao.framework')->initialize();
         $controller = new BackendPassword();
+
         return $controller->run();
     }
-
 }

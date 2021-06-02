@@ -1,18 +1,19 @@
 <?php
 
-/**
- * Backend Password Reoovery Bundle for Contao CMS
+declare(strict_types=1);
+
+/*
+ * This file is part of Backend Password Recovery Bundle.
  *
- * Copyright (C) 2005-2018 Marko Cupic
- *
- * @package Backend Password Recovery Bundle
- * @link    https://www.github.com/markocupic/backend-password-recovery-bundle
- *
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * @license MIT
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
 namespace Markocupic\BackendPasswordRecoveryBundle;
 
-use Markocupic\BackendPasswordRecovery\Controller\BackendPasswordRecoveryController;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -22,6 +23,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class MarkocupicBackendPasswordRecoveryBundle extends Bundle
 {
-
-
 }

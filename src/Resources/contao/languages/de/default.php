@@ -13,7 +13,7 @@
 $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'] = 'Passwort zurücksetzen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzernamen';
 $GLOBALS['TL_LANG']['ERR']['pwrecoveryFailed'] = "In der Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.";
-$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = '<div class="tl_pw_recovery"><p>Möchten Sie Ihr <a class="tl_submit password_recovery_button" href="%s">Passwort wiederherstellen?</a></p></div>';
+$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = "Möchten Sie Ihr <a class=\"tl_submit password_recovery_button\" href=\"%s\">Passwort wiederherstellen?</a>";
 $GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = "Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein.";
 $GLOBALS['TL_LANG']['MSC']['newPassword'] = "Bitte geben Sie Ihr neues Passwort ein.";
 $GLOBALS['TL_LANG']['MSC']['beLogin'] = "Contao Backend-Login";
