@@ -20,6 +20,7 @@
 .tl_pw_recovery a.tl_submit.password_recovery_button:hover {
     background-color: #0f1c26;
 }
+<<<<<<< HEAD
 
 .backend-password-recovery .widget{
     padding-top: 15px;
@@ -28,3 +29,5 @@
 .backend-password-recovery .widget input.tl_text{
     margin-top: 10px;
 }
+=======
+>>>>>>> 0604f2bfebc796d43feaa54b5628f344c9a03125
