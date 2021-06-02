@@ -8,8 +8,8 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\DelegatingParser;
 use Contao\TestCase\ContaoTestCase;
-use Markocupic\ContaoTestBundle\ContaoManager\Plugin;
-use Markocupic\ContaoTestBundle\MarkocupicContaoTestBundle;
+use Markocupic\BackendPasswordRecoveryBundle\ContaoManager\Plugin;
+use Markocupic\BackendPasswordRecoveryBundle\MarkocupicBackendPasswordRecoveryBundle;
 
 /**
  * Class PluginTest
