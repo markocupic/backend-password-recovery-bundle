@@ -24,6 +24,14 @@
     "php": ">=7.0",
     "contao/core-bundle": ">=4.7"
   },
+  "require-dev": {
+    "contao/manager-plugin": "^2.3",
+    "contao/test-case": "^4.0",
+    "phpunit/phpunit": "^8.4",
+    "symfony/http-client": "4.4.*",
+    "symfony/phpunit-bridge": "4.4.*",
+    "contao/easy-coding-standard": "^3.0"
+  },
   "conflict": {
     "contao/core": "3.*"
   },
