@@ -17,6 +17,7 @@ Mit  `$this->recoverPasswordLink` bekommst du im Login Template "be_login.html5"
               <button type="submit" name="login" id="login" class="tl_submit"><?= $this->loginButton ?></button>
               <a href="/" class="footer_preview"><?= $this->feLink ?> ›</a>
               <br>
+              /** Show password forgot link **/
               <a href="<?= $this->recoverPasswordLink ?>" class="footer_preview"><?= $this->forgotPassword ?> ›</a>
             </div>
 
