@@ -12,5 +12,6 @@ services:
       - "@session"
       - "@uri_signer"
       - "@router"
+      - '@contao.routing.scope_matcher'
     tags:
-      - { name: contao.hook, hook: parseTemplate, method: addPwRecoveryLinkToBackendLoginForm }
+      - { name: contao.hook, hook: parseTemplate, method: addPasswordRecoveryLinkToContaoBackendLoginForm }

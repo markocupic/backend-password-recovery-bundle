@@ -30,7 +30,10 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class RequirePasswordRecoveryLink extends Backend
 {
-	protected $locale;
+    /**
+     * @var string
+     */
+    protected $locale;
 
 	/**
 	 * Initialize the controller
@@ -71,8 +74,8 @@ class RequirePasswordRecoveryLink extends Backend
 		/** @var BackendTemplate|object $objTemplate */
 		$objTemplate = new BackendTemplate('be_require_password_link');
 
-        /** @var RouterInterface $router */
-        $router = System::getContainer()->get('router');
+		/** @var RouterInterface $router */
+		$router = System::getContainer()->get('router');
 
 		if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('username') != '')
 		{
@@ -108,21 +111,21 @@ class RequirePasswordRecoveryLink extends Backend
 				Database::getInstance()->prepare("UPDATE tl_user SET activation=? WHERE id=?")->execute($token, $objUser->id);
 
 				// Generate renew password link
-				$strLink = Environment::get('url').$router->generate('backend_password_recovery_renewpassword') . '?token=' . $token . '&_locale=' . $this->locale;
+				$strLink = Environment::get('url') . $router->generate('backend_password_recovery_renewpassword') . '?token=' . $token . '&_locale=' . $this->locale;
 
 				// Send mail
 				$objEmail = new Email();
 				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
 
-				$objEmail->subject = sprintf($GLOBALS['TL_LANG']['MSC']['pwrecoveryText'][0], Environment::get('base'));
-				$objEmail->text = sprintf($GLOBALS['TL_LANG']['MSC']['pwrecoveryText'][1], Environment::get('base'), $strLink);
+				$objEmail->subject = sprintf($GLOBALS['TL_LANG']['MSC']['pwRecoveryText'][0], Environment::get('base'));
+				$objEmail->text = sprintf($GLOBALS['TL_LANG']['MSC']['pwRecoveryText'][1], Environment::get('base'), $strLink);
 				$objEmail->sendTo($objUser->email);
 				System::log('Password for user ' . $objUser->username . ' has been reset.', __METHOD__, TL_GENERAL);
-				Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwrecoveryLinkSuccessfullySent']);
+				Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent']);
 			}
 			else
 			{
-				Message::addError($GLOBALS['TL_LANG']['ERR']['pwrecoveryFailed']);
+				Message::addError($GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed']);
 			}
 		}
 
@@ -130,10 +133,10 @@ class RequirePasswordRecoveryLink extends Backend
 		$objTemplate->messages = Message::generate();
 		$objTemplate->base = Environment::get('base');
 		$objTemplate->language = $GLOBALS['TL_LANGUAGE'];
-		$objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline']);
+		$objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline']);
 		$objTemplate->charset = Config::get('characterSet');
 		$objTemplate->action = ampersand(Environment::get('request'));
-		$objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwrecoveryHeadline'];
+		$objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'];
 		$objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
 		$objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
 		$objTemplate->usernameOrEmail = $GLOBALS['TL_LANG']['MSC']['emailOrUsername'];
