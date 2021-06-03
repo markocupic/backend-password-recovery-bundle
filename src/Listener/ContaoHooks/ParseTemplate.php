@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\Environment as ContaoEnvironment;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -67,13 +66,11 @@ class ParseTemplate
                 $request = $this->requestStack->getCurrentRequest();
                 $locale = $request->getLocale();
 
-
-
                 $href = sprintf(
                     $request->getSchemeAndHttpHost().$this->router->generate('backend_password_recovery_requirepasswordrecoverylink').'?_locale=%s',
                     $locale
                 );
-
+                
                 $signedUri = $this->uriSigner->sign($href);
                 $objTemplate->recoverPasswordLink = $signedUri;
 
