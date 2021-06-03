@@ -22,7 +22,7 @@
   },
   "require": {
     "php": ">=7.0",
-    "contao/core-bundle": ">=4.7"
+    "contao/core-bundle": ">=4.9"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.3",

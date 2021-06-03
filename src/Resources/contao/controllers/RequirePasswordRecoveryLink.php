@@ -23,6 +23,7 @@ use Contao\StringUtil;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class RequirePasswordRecoveryLink
@@ -70,6 +71,9 @@ class RequirePasswordRecoveryLink extends Backend
 		/** @var BackendTemplate|object $objTemplate */
 		$objTemplate = new BackendTemplate('be_require_password_link');
 
+        /** @var RouterInterface $router */
+        $router = System::getContainer()->get('router');
+
 		if ($request->request->get('FORM_SUBMIT') == 'tl_require_password_link' && $request->request->get('username') != '')
 		{
 			$username = $request->request->get('username');
@@ -104,7 +108,7 @@ class RequirePasswordRecoveryLink extends Backend
 				Database::getInstance()->prepare("UPDATE tl_user SET activation=? WHERE id=?")->execute($token, $objUser->id);
 
 				// Generate renew password link
-				$strLink = Environment::get('base') . 'backendpasswordrecovery/renewpassword?token=' . $token . '&_locale=' . $this->locale;
+				$strLink = Environment::get('url').$router->generate('backend_password_recovery_renewpassword') . '?token=' . $token . '&_locale=' . $this->locale;
 
 				// Send mail
 				$objEmail = new Email();

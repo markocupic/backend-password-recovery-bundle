@@ -27,6 +27,7 @@ $GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = 'Please enter your email address
 $GLOBALS['TL_LANG']['MSC']['newPassword'] = 'Please enter your new password';
 $GLOBALS['TL_LANG']['MSC']['beLogin'] = 'Contao back end login';
 $GLOBALS['TL_LANG']['MSC']['pwrecovery'] = 'Reset password';
+$GLOBALS['TL_LANG']['MSC']['forgotPassword'] = "forgot password";
 $GLOBALS['TL_LANG']['MSC']['recoverBT'] = 'Reset password';
 $GLOBALS['TL_LANG']['MSC']['pwrecoveryLinkSuccessfullySent'] = 'We\'ve sent you an email explaining how to reset your password.';
 $GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess'] = 'You have successfully restored your password. Please try to login now.';

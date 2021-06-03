@@ -10,5 +10,7 @@ services:
       - "@twig"
       - "@translator"
       - "@session"
+      - "@uri_signer"
+      - "@router"
     tags:
       - { name: contao.hook, hook: parseTemplate, method: addPwRecoveryLinkToBackendLoginForm }

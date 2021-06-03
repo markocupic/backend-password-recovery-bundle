@@ -14,10 +14,12 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
+use Contao\CoreBundle\Controller\AbstractController;
 use Markocupic\BackendPasswordRecoveryBundle\BackendPassword;
 use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -27,15 +29,33 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class BackendPasswordRecoveryController extends AbstractController
 {
+    private $uriSigner;
+
+    private $requestStack;
+
+    public function __construct(UriSigner $uriSigner, RequestStack $requestStack)
+    {
+        $this->uriSigner = $uriSigner;
+        $this->requestStack = $requestStack;
+    }
+
     /**
      * @Route("/backendpasswordrecovery/requirepasswordrecoverylink", name="backend_password_recovery_requirepasswordrecoverylink")
      */
     public function requirepasswordrecoverylinkAction(): Response
     {
-        $this->container->get('contao.framework')->initialize();
-        $controller = new RequirePasswordRecoveryLink();
 
+        $this->initializeContaoFramework();
+
+        $request = $this->requestStack->getCurrentRequest();
+
+        if(!$this->uriSigner->check($request->getUri())){
+            return new Response('Access denied!', Response::HTTP_FORBIDDEN);
+        }
+
+        $controller = new RequirePasswordRecoveryLink();
         return $controller->run();
+
     }
 
     /**
@@ -43,7 +63,7 @@ class BackendPasswordRecoveryController extends AbstractController
      */
     public function renewpasswordAction(): Response
     {
-        $this->container->get('contao.framework')->initialize();
+        $this->initializeContaoFramework();
         $controller = new BackendPassword();
 
         return $controller->run();

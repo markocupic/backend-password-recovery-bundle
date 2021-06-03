@@ -15,8 +15,11 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\Environment as ContaoEnvironment;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\UriSigner;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -35,13 +38,19 @@ class ParseTemplate
 
     private $session;
 
-    public function __construct(ContaoFramework $framework, $requestStack, Environment $twig, TranslatorInterface $translator, SessionInterface $session)
+    private $uriSigner;
+
+    private $router;
+
+    public function __construct(ContaoFramework $framework, $requestStack, Environment $twig, TranslatorInterface $translator, SessionInterface $session, UriSigner $uriSigner, RouterInterface $router)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
         $this->twig = $twig;
         $this->translator = $translator;
         $this->session = $session;
+        $this->uriSigner = $uriSigner;
+        $this->router = $router;
     }
 
     /**
@@ -51,21 +60,30 @@ class ParseTemplate
     {
         if (TL_MODE === 'BE') {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
+                // Generate password recover link
+                $locale = $this->requestStack->getMasterRequest()->getLocale();
+
+                $href = sprintf(
+                    ContaoEnvironment::get('url').$this->router->generate('backend_password_recovery_requirepasswordrecoverylink').'?_locale=%s',
+                    $locale
+                );
+
+                $signedUri = $this->uriSigner->sign($href);
+                $objTemplate->recoverPasswordLink = $signedUri;
+                // Forgot password label
+                $objTemplate->forgotPassword = $this->translator->trans('MSC.forgotPassword', [], 'contao_default');
+
                 // Show reset password link if login has failed
                 if (false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
-                    $locale = $this->requestStack->getMasterRequest()->getLocale();
 
-                    $href = sprintf(
-                        'backendpasswordrecovery/requirepasswordrecoverylink?_locale=%s',
-                        $locale
-                    );
+
 
                     $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
                         [
                             'password_recovery_button' => sprintf(
                               $this->translator->trans('ERR.invalidBackendLogin', [], 'contao_default'),
-                              $href
+                              $signedUri
                             ),
                         ]
                     );

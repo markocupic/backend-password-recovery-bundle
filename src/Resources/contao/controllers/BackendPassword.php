@@ -27,6 +27,7 @@ use Patchwork\Utf8;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class BackendPassword
@@ -105,6 +106,9 @@ class BackendPassword extends Backend
 		/** @var BackendTemplate|object $objTemplate */
 		$objTemplate = new BackendTemplate('be_password');
 
+		/** @var RouterInterface $router */
+		$router = System::getContainer()->get('router');
+
 		if ($request->request->get('FORM_SUBMIT') == 'tl_password')
 		{
 			$pw = $request->request->get('password');
@@ -170,14 +174,15 @@ class BackendPassword extends Backend
 					/** @var SessionInterface $session */
 					$session = System::getContainer()->get('session');
 
-					$sessionBag = ['status' => 'success'];
-          $session->set('pw_recovery', $sessionBag);
+					$sessionBag = array('status' => 'success');
+					$session->set('pw_recovery', $sessionBag);
 
-					$this->redirect('contao/login');
+					$this->redirect($router->generate('contao_backend_login'));
 				}
 			}
 		}
 
+		
 		$objTemplate->theme = Backend::getTheme();
 		$objTemplate->messages = Message::generate();
 		$objTemplate->base = Environment::get('base');

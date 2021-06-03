@@ -1,0 +1,7 @@
+services:
+
+  Markocupic\BackendPasswordRecoveryBundle\Controller\BackendPasswordRecoveryController:
+    public: true
+    arguments:
+      - '@uri_signer'
+      - '@request_stack'

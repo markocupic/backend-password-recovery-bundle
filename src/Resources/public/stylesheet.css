@@ -22,7 +22,11 @@
 }
 
 .backend-password-recovery .widget{
-    padding-top: 15px;
+    padding-top: 10px;
+}
+
+.backend-password-recovery .widget label{
+    line-height: 1.5;
 }
 
 .backend-password-recovery .widget .tl_text{

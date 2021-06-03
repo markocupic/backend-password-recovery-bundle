@@ -18,6 +18,7 @@ $GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = "Bitte geben Sie Ihre E-Mail-Adr
 $GLOBALS['TL_LANG']['MSC']['newPassword'] = "Bitte geben Sie Ihr neues Passwort ein.";
 $GLOBALS['TL_LANG']['MSC']['beLogin'] = "Contao Backend-Login";
 $GLOBALS['TL_LANG']['MSC']['pwrecovery'] = "Passwort zurücksetzen";
+$GLOBALS['TL_LANG']['MSC']['forgotPassword'] = "Passwort vergessen";
 $GLOBALS['TL_LANG']['MSC']['recoverBT'] = "Passwort zurücksetzen";
 $GLOBALS['TL_LANG']['MSC']['pwrecoveryLinkSuccessfullySent'] = "Sie erhalten nun eine E-Mail mit Hinweisen um Ihr Passwort wiederherzustellen.";
 $GLOBALS['TL_LANG']['MSC']['pwrecoverySuccess'] = 'Sie haben Ihr Passwort erfolgreich wiederhergestellt. Sie können sich nun mit dem neuen Passwort anmelden.';

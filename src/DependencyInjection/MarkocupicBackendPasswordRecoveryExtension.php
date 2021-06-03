@@ -20,8 +20,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
- * Class MarkocupicBackendPasswordRecoveryExtension
- * @package Markocupic\BackendPasswordRecoveryBundle\DependencyInjection
+ * Class MarkocupicBackendPasswordRecoveryExtension.
  */
 class MarkocupicBackendPasswordRecoveryExtension extends Extension
 {
@@ -35,6 +34,7 @@ class MarkocupicBackendPasswordRecoveryExtension extends Extension
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
+        $loader->load('services.yml');
         $loader->load('listener.yml');
     }
 }
