@@ -17,6 +17,7 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Environment as ContaoEnvironment;
 use Contao\Template;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\RouterInterface;
@@ -61,23 +62,26 @@ class ParseTemplate
         if (TL_MODE === 'BE') {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
                 // Generate password recover link
-                $locale = $this->requestStack->getMasterRequest()->getLocale();
+
+                /** @var Request $request */
+                $request = $this->requestStack->getCurrentRequest();
+                $locale = $request->getLocale();
+
+
 
                 $href = sprintf(
-                    ContaoEnvironment::get('url').$this->router->generate('backend_password_recovery_requirepasswordrecoverylink').'?_locale=%s',
+                    $request->getSchemeAndHttpHost().$this->router->generate('backend_password_recovery_requirepasswordrecoverylink').'?_locale=%s',
                     $locale
                 );
 
                 $signedUri = $this->uriSigner->sign($href);
                 $objTemplate->recoverPasswordLink = $signedUri;
+
                 // Forgot password label
                 $objTemplate->forgotPassword = $this->translator->trans('MSC.forgotPassword', [], 'contao_default');
 
                 // Show reset password link if login has failed
                 if (false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
-
-
-
                     $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
                         [
