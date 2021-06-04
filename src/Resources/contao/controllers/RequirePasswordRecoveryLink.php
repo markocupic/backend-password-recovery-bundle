@@ -111,7 +111,7 @@ class RequirePasswordRecoveryLink extends Backend
 				Database::getInstance()->prepare("UPDATE tl_user SET activation=? WHERE id=?")->execute($token, $objUser->id);
 
 				// Generate renew password link
-				$strLink = Environment::get('url') . $router->generate('backend_password_recovery_renewpassword') . '?token=' . $token . '&_locale=' . $this->locale;
+				$strLink = Environment::get('url') . $router->generate('backend_password_recovery_renewpassword') . '?token=' . $token;
 
 				// Send mail
 				$objEmail = new Email();

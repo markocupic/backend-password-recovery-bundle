@@ -50,10 +50,7 @@ class ParseTemplate
      */
     private $translator;
 
-    /**
-     * @var SessionInterface
-     */
-    private $session;
+
 
     /**
      * @var UriSigner
@@ -70,13 +67,12 @@ class ParseTemplate
      */
     private $scopeMatcher;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, SessionInterface $session, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
         $this->twig = $twig;
         $this->translator = $translator;
-        $this->session = $session;
         $this->uriSigner = $uriSigner;
         $this->router = $router;
         $this->scopeMatcher = $scopeMatcher;
@@ -119,20 +115,7 @@ class ParseTemplate
                     );
                 }
 
-                if ($this->session->has('pw_recovery')) {
-                    $arrBag = $this->session->get('pw_recovery');
 
-                    if (\is_array($arrBag) && isset($arrBag['status']) && 'success' === $arrBag['status']) {
-                        $this->session->remove('pw_recovery');
-
-                        $objTemplate->messages .= $this->twig->render(
-                        '@MarkocupicBackendPasswordRecovery/password_recovery_confirmation.html.twig',
-                        [
-                            'confirmation_text' => $this->translator->trans('MSC.pwRecoverySuccess', [], 'contao_default'),
-                        ]
-                      );
-                    }
-                }
             }
         }
     }

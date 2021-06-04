@@ -2,7 +2,7 @@
 
 
 # Contao Backend Password Recovery Bundle
-Dieses Plugin blendet **nach** falscher Eingabe des **Backend Passwortes** einen "Passwort wiederherstellen-Button" ein. Durch Eingabe des Benutzernamens oder der E-Mail-Adresse wird dem User **eine E-Mail mit einem Link** zugesandt. Hiermit lässt sich das Passwort neu setzen.
+Dieses Plugin blendet **nach** falscher Eingabe des **Backend User Passwortes** einen "Passwort-Wiederherstellen-Button" ein. Durch Eingabe des Benutzernamens oder der E-Mail-Adresse wird dem User **eine E-Mail mit einem Link** zugesandt. Damit kann der Backend User sein Passwort neu erstellen.
 
 ## Installation
 Via composer mit `composer require markocupic/backend-password-recovery-bundle`
@@ -12,7 +12,7 @@ oder Contao Manager. Nach der Installation das Install-Tool für das Datenbank U
 Nach der Installation ist keine weitere Konfiguration nötig.
 
 ## Bedienung
-| Ungültige Passworteingabe | Benutzernamen oder E-Mail-Adresse eingeben | Benutzer erhält eine E-Mail mit Link zugesandt und setzt das PW neu. |
+| Ungültige Passworteingabe | Benutzernamen oder E-Mail-Adresse eingeben | Benutzer erhält eine E-Mail mit Link zugesandt und richtet ein neues Passwort ein. |
 |-|-|-|
 | <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
 

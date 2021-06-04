@@ -24,7 +24,6 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzer
 $GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = "Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein.";
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = "Passwort vergessen";
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = "Sie erhalten nun eine E-Mail mit Hinweisen um Ihr Passwort wiederherzustellen.";
-$GLOBALS['TL_LANG']['MSC']['pwRecoverySuccess'] = 'Sie haben Ihr Passwort erfolgreich wiederhergestellt. Sie können sich nun mit dem neuen Passwort anmelden.';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryText']['0'] = "Ihre Passwort-Anforderung auf %s";
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryText']['1'] = "Sie haben ein neues Passwort für %s angefordert.\n\nBitte öffnen Sie diesen Link %s um Ihr neues Passwort einzurichten.\n\nFalls Sie diese E-Mail nicht angefordert haben, kontaktieren Sie bitte den Administrator der Webseite.\n\n\n\n---------------------------------\n\nDies ist eine automatisch generierte Nachricht. Bitte antworten Sie nicht darauf.";
 

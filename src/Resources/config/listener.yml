@@ -9,7 +9,6 @@ services:
       - "@request_stack"
       - "@twig"
       - "@translator"
-      - "@session"
       - "@uri_signer"
       - "@router"
       - '@contao.routing.scope_matcher'
