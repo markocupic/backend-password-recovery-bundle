@@ -1,4 +1,4 @@
-<img src="./src/Resources/public/logo.png" width="300">
+<img src="./docs/logo.png" width="300">
 
 
 # Contao Backend Password Recovery Bundle
@@ -21,14 +21,14 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']
 ## Bedienung
 | Ungültige Passworteingabe | Benutzernamen oder E-Mail-Adresse eingeben | Benutzer erhält eine E-Mail mit Link zugesandt und richtet ein neues Passwort ein. |
 |-|-|-|
-| <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
+| <img src="./docs/print_screen_1.png" width="300"> | <img src="./docs/print_screen_2.png" width="300"> | <img src="./docs/print_screen_3.png" width="300"> |
 
 
 
 ## Wie bette ich den "Passwort vergessen" Link von Anfang an im Backend Login Template ein?
 Mit  `$this->recoverPasswordLink` bekommst du im Login Template "be_login.html5" die url und mit `$this->forgotPassword` die Übersetzung.
 
-<img src="./src/Resources/public/print_screen_4.png" width="300">
+<img src="./docs/print_screen_4.png" width="300">
 
  
 ```

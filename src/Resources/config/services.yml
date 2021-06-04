@@ -1,10 +1,13 @@
 services:
 
-  Markocupic\BackendPasswordRecoveryBundle\Controller\SendPasswordRecoveryLinkController:
+  Markocupic\BackendPasswordRecoveryBundle\Controller\PasswordRecoveryLinkRequestController:
     public: true
     arguments:
       - '@uri_signer'
       - '@request_stack'
+      - '@router'
+      - '@contao.csrf.token_manager'
+      - '%contao.csrf_token_name%'
 
   Markocupic\BackendPasswordRecoveryBundle\Controller\RenewPasswordController:
     public: true

@@ -13,7 +13,7 @@
 /**
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'In der Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.';
+$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'In der Benutzer-Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.';
 $GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = 'Möchten Sie Ihr <a class="tl_submit password_recovery_button" href="%s">Passwort wiederherstellen?</a>';
 
 /**
@@ -21,9 +21,9 @@ $GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = 'Möchten Sie Ihr <a class="
  */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Passwort wiederherstellen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzernamen';
-$GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = 'Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein.';
+$GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein, um eine E-Mail-Nachricht mit dem Wiederherstellungslink zu erhalten.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'Passwort vergessen';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Sie erhalten nun eine E-Mail mit Hinweisen um Ihr Passwort wiederherzustellen.';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Sie erhalten nun in Kürze eine E-Mail mit Hinweisen um Ihr Passwort wiederherzustellen. Prüfen Sie das Spamverzeichnis, falls sich die Nachricht nicht in Ihrem Posteingang befinden sollte.';
 // Email subject
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Ihre Passwort-Anforderung für #host#';
 // Email text
