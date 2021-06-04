@@ -9,8 +9,9 @@ Via composer mit `composer require markocupic/backend-password-recovery-bundle`
 oder Contao Manager. Nach der Installation das Install-Tool für das Datenbank Update laufen lassen.
 
 Danach ist keine weitere Konfiguration nötig.
-| <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
 
+| <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
+|-|-|-|
 
 
 ## Wie bette ich den "Passwort vergessen" Link im Backend Login Template ein?
