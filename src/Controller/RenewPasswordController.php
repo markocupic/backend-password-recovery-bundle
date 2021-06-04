@@ -81,14 +81,14 @@ class RenewPasswordController extends AbstractController
 
         $request = $this->requestStack->getCurrentRequest();
 
-        // Get the token from the request string
+        // Get the token from the request string.
         $securityToken = $request->query->get('token');
 
         if (!$request || empty($securityToken)) {
             throw new AccessDeniedException('Access denied due to invalid request or missing token.');
         }
 
-        // get user from token
+        // Get user from token.
         $stmt = $this->connection->prepare('SELECT * FROM tl_user WHERE activation=? AND disable=? AND (start=? OR start<?) AND (stop=? OR stop>?) LIMIT 0,1');
         $stmt->bindValue(1, $securityToken);
         $stmt->bindValue(2, '');
@@ -127,6 +127,7 @@ class RenewPasswordController extends AbstractController
 
             $qb->execute();
 
+            // Log
             if ($this->logger) {
                 $strText = sprintf('Backend user "%s" has recovered his password.', $arrUser['username']);
                 $this->logger->log(
