@@ -90,7 +90,7 @@ class ParseTemplate
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
-        if ($this->scopeMatcher->isBackendRequest($request)) {
+        if ($request && $this->scopeMatcher->isBackendRequest($request)) {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
                 // Generate password recover link
                 $locale = $request->getLocale();
