@@ -24,5 +24,24 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'Email or your userna
 $GLOBALS['TL_LANG']['MSC']['emailOrUsername'] = 'Please enter your email address or your username.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = "forgot password";
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'We\'ve sent you an email explaining how to reset your password.';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryText'] = array('Your password request on %s', "You have requested a new password for %s.\n\nPlease click %s to set the new password. If you did not request this e-mail, please contact the website administrator.\n\n\n\n---------------------------------\n\nThis is an auto-generated message. Do not answer please.");
+// Email subject
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Your password request on #host#';
+// Email text
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
+Hi #name#
+
+You have requested a new password for #host#.
+
+Please open the link below to set up your new password.
+
+#link# 
+
+If you did not request this email, please contact the website administrator.
+
+
+
+---------------------------------
+
+This is an auto-generated message. Do not answer please.
+';
 

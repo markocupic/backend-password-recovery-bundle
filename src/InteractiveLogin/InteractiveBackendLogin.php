@@ -73,9 +73,6 @@ class InteractiveBackendLogin
      */
     private $logger;
 
-    /**
-     * InteractiveLogin constructor.
-     */
     public function __construct(ContaoFramework $framework, UserChecker $userChecker, Session $session, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack, ?LoggerInterface $logger = null)
     {
         $this->framework = $framework;
@@ -91,7 +88,7 @@ class InteractiveBackendLogin
 
     public function login(string $username): bool
     {
-        $providerKey = static::SECURED_AREA_BACKEND;
+        $strFirewall = static::SECURED_AREA_BACKEND;
 
         $userClass = BackendUser::class;
 
@@ -104,7 +101,7 @@ class InteractiveBackendLogin
             return false;
         }
 
-        $token = new UsernamePasswordToken($user, null, $providerKey, $user->getRoles());
+        $token = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         // Save the token to the session

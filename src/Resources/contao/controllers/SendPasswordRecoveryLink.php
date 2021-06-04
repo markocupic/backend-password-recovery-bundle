@@ -30,7 +30,6 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class SendPasswordRecoveryLink extends Backend
 {
-
 	/**
 	 * Initialize the controller
 	 *
@@ -95,7 +94,11 @@ class SendPasswordRecoveryLink extends Backend
 			}
 
 			$time = time();
-			$objUser = Database::getInstance()->prepare("SELECT * FROM tl_user WHERE (email=? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")->limit(1)->execute($username, $username);
+			$objUser = Database::getInstance()
+                ->prepare("SELECT * FROM tl_user WHERE (email=? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")
+                ->limit(1)
+                ->execute($username, $username)
+            ;
 
 			if ($objUser->numRows)
 			{
@@ -112,10 +115,24 @@ class SendPasswordRecoveryLink extends Backend
 				$objEmail = new Email();
 				$objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
 
-				$objEmail->subject = sprintf($GLOBALS['TL_LANG']['MSC']['pwRecoveryText'][0], Environment::get('base'));
-				$objEmail->text = sprintf($GLOBALS['TL_LANG']['MSC']['pwRecoveryText'][1], Environment::get('base'), $strLink);
+				// Subject
+				$strSubject = str_replace('#host#', Environment::get('base'), $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject']);
+				$objEmail->subject = $strSubject;
+
+				// Text
+                $strText = str_replace('#host#', Environment::get('base'), $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']);
+                $strText = str_replace('#link#', $strLink, $strText);
+                $strText = str_replace('#name#', $objUser->name, $strText);
+
+                $objEmail->text = $strText;
+
+                // Send message
 				$objEmail->sendTo($objUser->email);
+
+				// Log
 				System::log('Password for user ' . $objUser->username . ' has been reset.', __METHOD__, TL_GENERAL);
+
+				// Show message in the backend
 				Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent']);
 			}
 			else
