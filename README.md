@@ -11,8 +11,9 @@ oder Contao Manager. Nach der Installation das Install-Tool für das Datenbank U
 ## Konfiguration
 Nach der Installation ist keine weitere Konfiguration nötig.
 | Ungültige Passworteingabe | Benutzernamen oder E-Mail-Adresse eingeben | Benutzer erhält eine E-Mail mit Link zugesandt und setzt das PW neu. |
-| <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
 |-|-|-|
+| <img src="./src/Resources/public/print_screen_1.png" width="300"> | <img src="./src/Resources/public/print_screen_2.png" width="300"> | <img src="./src/Resources/public/print_screen_3.png" width="300"> |
+
 
 
 ## Wie bette ich den "Passwort vergessen" Link im Backend Login Template ein?
