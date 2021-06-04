@@ -1,12 +1,12 @@
 services:
 
-  Markocupic\BackendPasswordRecoveryBundle\Controller\BackendPasswordRecoveryController:
+  Markocupic\BackendPasswordRecoveryBundle\Controller\SendPasswordRecoveryLinkController:
     public: true
     arguments:
       - '@uri_signer'
       - '@request_stack'
 
-  Markocupic\BackendPasswordRecoveryBundle\Controller\RenewBackendPasswordController:
+  Markocupic\BackendPasswordRecoveryBundle\Controller\RenewPasswordController:
     public: true
     arguments:
       - '@contao.framework'
@@ -14,6 +14,7 @@ services:
       - '@database_connection'
       - '@router'
       - '@Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin'
+      - '@monolog.logger.contao'
 
   Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin:
     public: true

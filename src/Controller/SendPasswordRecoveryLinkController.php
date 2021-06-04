@@ -16,17 +16,18 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Contao\CoreBundle\Controller\AbstractController;
 use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
+use Markocupic\BackendPasswordRecoveryBundle\SendPasswordRecoveryLink;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class BackendPasswordRecoveryController.
+ * Class SendPasswordRecoveryLinkController.
  *
  * @Route(defaults={"_scope" = "backend", "_token_check" = true})
  */
-class BackendPasswordRecoveryController extends AbstractController
+class SendPasswordRecoveryLinkController extends AbstractController
 {
     private $uriSigner;
 
@@ -51,7 +52,7 @@ class BackendPasswordRecoveryController extends AbstractController
             return new Response('Access denied!', Response::HTTP_FORBIDDEN);
         }
 
-        $controller = new RequirePasswordRecoveryLink();
+        $controller = new SendPasswordRecoveryLink();
 
         return $controller->run();
     }

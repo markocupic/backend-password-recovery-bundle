@@ -17,9 +17,12 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,29 +30,46 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Class RenewBackendPasswordController.
+ * Class RenewPasswordController.
  *
  * @Route(defaults={"_scope" = "backend"})
  */
-class RenewBackendPasswordController extends AbstractController
+class RenewPasswordController extends AbstractController
 {
+    const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
+    /**
+     * @var ContaoFramework
+     */
     private $framework;
 
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
 
+    /**
+     * @var Connection
+     */
     private $connection;
 
+    /**
+     * @var RouterInterface
+     */
     private $router;
 
+    /**
+     * @var InteractiveBackendLogin
+     */
     private $interactiveBackendLogin;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, RouterInterface $router, InteractiveBackendLogin $interactiveBackendLogin)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, RouterInterface $router, InteractiveBackendLogin $interactiveBackendLogin, ?LoggerInterface $logger = null)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->router = $router;
         $this->interactiveBackendLogin = $interactiveBackendLogin;
+        $this->logger = $logger;
     }
 
     /**
@@ -68,6 +88,7 @@ class RenewBackendPasswordController extends AbstractController
             throw new AccessDeniedException('Access denied due to invalid request or missing token.');
         }
 
+        // get user from token
         $stmt = $this->connection->prepare('SELECT * FROM tl_user WHERE activation=? AND disable=? AND (start=? OR start<?) AND (stop=? OR stop>?) LIMIT 0,1');
         $stmt->bindValue(1, $securityToken);
         $stmt->bindValue(2, '');
@@ -83,10 +104,14 @@ class RenewBackendPasswordController extends AbstractController
 
         $arrUser = $arrUsers[0];
 
+        // Interactive login
         if ($this->interactiveBackendLogin->login($arrUser['username'])) {
             /** @var QueryBuilder $qb */
             $qb = $this->connection->createQueryBuilder();
 
+            // Reset token, loginAttempts, etc.
+            // and set pwChange to "1"
+            // thats the way we can use contao native password forgot controller.
             $qb->update('tl_user', 'u')
                 ->set('u.pwChange', ':pwChange', \PDO::PARAM_STR)
                 ->set('u.activation', ':activation', \PDO::PARAM_STR)
@@ -102,7 +127,16 @@ class RenewBackendPasswordController extends AbstractController
 
             $qb->execute();
 
-            // redirects to the "contao_backend_password" route
+            if ($this->logger) {
+                $strText = sprintf('Backend user "%s" has recovered his password.', $arrUser['username']);
+                $this->logger->log(
+                    LogLevel::INFO,
+                    $strText,
+                    ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
+                );
+            }
+
+            // Redirects to the "contao_backend_password" route.
             return $this->redirectToRoute('contao_backend_password');
         }
 

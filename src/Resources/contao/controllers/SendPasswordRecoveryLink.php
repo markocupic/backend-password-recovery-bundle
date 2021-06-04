@@ -26,14 +26,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Class RequirePasswordRecoveryLink
+ * Class SendPasswordRecoveryLink
  */
-class RequirePasswordRecoveryLink extends Backend
+class SendPasswordRecoveryLink extends Backend
 {
-    /**
-     * @var string
-     */
-    protected $locale;
 
 	/**
 	 * Initialize the controller
@@ -57,7 +53,6 @@ class RequirePasswordRecoveryLink extends Backend
 
 		System::loadLanguageFile('default', $request->getLocale());
 		System::loadLanguageFile('modules', $request->getLocale());
-		$this->locale = $request->getLocale();
 	}
 
 	/**
