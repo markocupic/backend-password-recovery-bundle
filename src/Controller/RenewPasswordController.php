@@ -175,7 +175,7 @@ class RenewPasswordController extends AbstractController
 
         // Log
         if ($this->logger) {
-            $strText = sprintf('Backend user "%s" has recovered his password.', $arrUser['username']);
+            $strText = sprintf('Backend user "%s" has recovered his password.', $username);
             $this->logger->log(
                     LogLevel::INFO,
                     $strText,
