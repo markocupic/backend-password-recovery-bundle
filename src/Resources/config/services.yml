@@ -17,6 +17,7 @@ services:
       - '@database_connection'
       - '@router'
       - '@Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin'
+      - '@security.helper'
       - '@monolog.logger.contao'
 
   Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin:

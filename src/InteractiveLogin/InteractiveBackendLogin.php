@@ -18,7 +18,6 @@ use Contao\BackendUser;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Security\User\ContaoUserProvider;
 use Contao\CoreBundle\Security\User\UserChecker;
-use Contao\System;
 use Contao\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,6 +25,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 /**
@@ -68,6 +68,8 @@ class InteractiveBackendLogin
      */
     private $requestStack;
 
+
+
     /**
      * @var LoggerInterface|null
      */
@@ -82,12 +84,12 @@ class InteractiveBackendLogin
         $this->eventDispatcher = $eventDispatcher;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
-
-        $this->framework->initialize();
     }
 
     public function login(string $username): bool
     {
+        $this->framework->initialize();
+
         $strFirewall = static::SECURED_AREA_BACKEND;
 
         $userClass = BackendUser::class;
@@ -97,43 +99,35 @@ class InteractiveBackendLogin
 
         $user = $userProvider->loadUserByUsername($username);
 
-        if (!$user) {
+        $token = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
+
+        if (!is_a($token, UsernamePasswordToken::class)) {
             return false;
         }
 
-        $token = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         // Save the token to the session
         $this->session->set('_security_'.$providerKey, serialize($token));
         $this->session->save();
 
-        // Fire the login event manually
+        /** @var InteractiveLoginEvent $event */
         $event = new InteractiveLoginEvent($this->requestStack->getCurrentRequest(), $token);
         $this->eventDispatcher->dispatch('security.interactive_login', $event);
 
-        // Trigger the Contao post login hook
-        $this->triggerPostLoginHook($user);
-
-        return true;
-    }
-
-    /**
-     * Trigger the Contao post login hook.
-     */
-    private function triggerPostLoginHook(User $user): void
-    {
-        if (empty($GLOBALS['TL_HOOKS']['postLogin']) || !\is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
-            return;
+        if (!is_a($event, InteractiveLoginEvent::class)) {
+            return false;
         }
 
-        @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
+        /** @var BackendUser $user */
+        $user = $token->getUser();
 
-        /** @var System $system */
-        $systemAdapter = $this->framework->getAdapter(System::class);
-
-        foreach ($GLOBALS['TL_HOOKS']['postLogin'] as $callback) {
-            $systemAdapter->importStatic($callback[0])->{$callback[1]}($user);
+        if ($user instanceof BackendUser) {
+            if ($username === $user->username) {
+                return true;
+            }
         }
+
+        return false;
     }
 }
