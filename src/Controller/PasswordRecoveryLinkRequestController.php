@@ -29,6 +29,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -113,7 +114,12 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 ;
 
                 // Generate renew password link
-                $strLink = Environment::get('url').$this->router->generate('backend_password_recovery_renewpassword').'?token='.$token;
+                $strLink = $this->router->generate(
+                    'backend_password_recovery_renewpassword',
+                    ['token' => $token],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+                
 
                 // Send email
                 $objEmail = new Email();

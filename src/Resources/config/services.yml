@@ -13,7 +13,6 @@ services:
     public: true
     arguments:
       - '@contao.framework'
-      - '@request_stack'
       - '@database_connection'
       - '@router'
       - '@Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin'

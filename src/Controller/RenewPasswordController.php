@@ -16,7 +16,6 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Contao\BackendUser;
 use Contao\CoreBundle\Controller\AbstractController;
-use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\System;
@@ -26,8 +25,6 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -46,11 +43,6 @@ class RenewPasswordController extends AbstractController
      * @var ContaoFramework
      */
     private $framework;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
 
     /**
      * @var Connection
@@ -77,10 +69,9 @@ class RenewPasswordController extends AbstractController
      */
     private $logger;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Connection $connection, RouterInterface $router, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, ?LoggerInterface $logger = null)
+    public function __construct(ContaoFramework $framework, Connection $connection, RouterInterface $router, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, ?LoggerInterface $logger = null)
     {
         $this->framework = $framework;
-        $this->requestStack = $requestStack;
         $this->connection = $connection;
         $this->router = $router;
         $this->interactiveBackendLogin = $interactiveBackendLogin;
@@ -94,27 +85,22 @@ class RenewPasswordController extends AbstractController
      * 3. Set tl_user.pwChange to '1'
      * 4. Redirect to Contao native "password forgot controller".
      *
-     * @Route("/backendpasswordrecovery/renewpassword", name="backend_password_recovery_renewpassword")
+     * @Route("/backendpasswordrecovery/renewpassword/{token<[a-z0-9]+>}", name="backend_password_recovery_renewpassword", defaults={"token": "0"})
      *
      * @throws Exception
      */
-    public function renewpasswordAction(): Response
+    public function renewpasswordAction($token): Response
     {
         $this->initializeContaoFramework();
 
-        /** @var Request $request */
-        $request = $this->requestStack->getCurrentRequest();
-
-        $securityToken = trim((string) $request->query->get('token'));
-
-        // Check if token exists in the url
-        if (!$request || !\strlen((string) $securityToken)) {
-            throw new AccessDeniedException('Access denied due to invalid request or missing token.');
+        // Check if token exists in the url -> empty('0') === true
+        if (!\strlen($token) || empty($token)) {
+            return new Response('Acces denied due to missing or invalid token.', Response::HTTP_UNAUTHORIZED);
         }
 
         // Get user from token.
         $stmt = $this->connection->prepare('SELECT * FROM tl_user WHERE activation=? AND disable=? AND (start=? OR start<?) AND (stop=? OR stop>?) LIMIT 0,1');
-        $stmt->bindValue(1, $securityToken);
+        $stmt->bindValue(1, $token);
         $stmt->bindValue(2, '');
         $stmt->bindValue(3, '');
         $stmt->bindValue(4, time());
@@ -180,10 +166,10 @@ class RenewPasswordController extends AbstractController
         if ($this->logger) {
             $strText = sprintf('Backend user "%s" has recovered his password.', $username);
             $this->logger->log(
-                    LogLevel::INFO,
-                    $strText,
-                    ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
-                );
+                LogLevel::INFO,
+                $strText,
+                ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
+            );
         }
 
         // Redirects to the "contao_backend_password" route.
