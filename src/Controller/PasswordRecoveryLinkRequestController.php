@@ -24,7 +24,6 @@ use Contao\Environment;
 use Contao\Message;
 use Contao\StringUtil;
 use Contao\System;
-use Markocupic\BackendPasswordRecoveryBundle\RequirePasswordRecoveryLink;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,6 +58,11 @@ class PasswordRecoveryLinkRequestController extends AbstractController
      * @var CsrfTokenManagerInterface
      */
     private $tokenManager;
+
+    /**
+     * @var string
+     */
+    private $csrfTokenName;
 
     public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, CsrfTokenManagerInterface $tokenManager, string $csrfTokenName)
     {
@@ -134,7 +138,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
             }
         }
 
-        $objTemplate = new BackendTemplate('be_require_password_link');
+        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
         $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $objTemplate->theme = Backend::getTheme();
         $objTemplate->messages = Message::generate();

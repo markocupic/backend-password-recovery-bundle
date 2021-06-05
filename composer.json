@@ -1,10 +1,11 @@
 {
   "name": "markocupic/backend-password-recovery-bundle",
-  "description": "Contao Backend Password Recovery Module",
+  "description": "Backend Password Recovery Plugin for Contao CMS",
   "keywords": [
     "contao",
-    "Backend",
-    "Password Recovery"
+    "backend",
+    "password forgot",
+    "password recovery"
   ],
   "type": "contao-module",
   "license": "MIT",
@@ -22,7 +23,7 @@
   },
   "require": {
     "php": ">=7.0",
-    "contao/core-bundle": ">=4.9"
+    "contao/core-bundle": "^4.9"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.3",
