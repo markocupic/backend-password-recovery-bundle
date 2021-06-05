@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 /**
@@ -62,13 +61,11 @@ class InteractiveBackendLogin
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
-
+    
     /**
      * @var RequestStack
      */
     private $requestStack;
-
-
 
     /**
      * @var LoggerInterface|null
