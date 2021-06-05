@@ -144,7 +144,7 @@ class RenewPasswordController extends AbstractController
         if (!empty($GLOBALS['TL_HOOKS']['postLogin']) && \is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
             @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
 
-            /** @var System $system */
+            /** @var System $systemAdapter */
             $systemAdapter = $this->framework->getAdapter(System::class);
 
             foreach ($GLOBALS['TL_HOOKS']['postLogin'] as $callback) {
