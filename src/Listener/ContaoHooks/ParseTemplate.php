@@ -24,6 +24,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
  * Class ParseTemplate.
@@ -76,12 +79,10 @@ class ParseTemplate
         $this->scopeMatcher = $scopeMatcher;
     }
 
-
     /**
-     * @param Template $objTemplate
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function addPasswordRecoveryLinkToContaoBackendLoginForm(Template $objTemplate): void
     {
@@ -95,7 +96,7 @@ class ParseTemplate
 
                 $href = sprintf(
                     $this->router->generate(
-                        'backend_password_recovery_requirepasswordrecoverylink',
+                        'backend_password_recovery_requirepasswordrecoverylink_form',
                         [],
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ).'?_locale=%s',

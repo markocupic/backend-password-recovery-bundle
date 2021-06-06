@@ -75,7 +75,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
     }
 
     /**
-     * @Route("/backendpasswordrecovery/requirepasswordrecoverylink", name="backend_password_recovery_requirepasswordrecoverylink")
+     * @Route("/backendpasswordrecovery/requirepasswordrecoverylink/form", name="backend_password_recovery_requirepasswordrecoverylink_form")
      */
     public function requirepasswordrecoverylinkAction(): Response
     {
@@ -134,20 +134,63 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 $strText = str_replace('#host#', Environment::get('base'), $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']);
                 $strText = str_replace('#link#', $strLink, $strText);
                 $strText = str_replace('#name#', $objUser->name, $strText);
-
                 $objEmail->text = $strText;
 
-                // Send message
+                // Send
                 $objEmail->sendTo($objUser->email);
 
-                // Show message in the backend
-                $objTemplate->doNotShowForm = true;
-                $objTemplate->confirmationMessage = $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'];
-                $objTemplate->backBT = $GLOBALS['TL_LANG']['MSC']['backBT'];
-                $objTemplate->backHref = $this->router->generate('contao_backend_login');
+                // everything ok so we sign the uri & redirect to confirmation page
+                $href = $this->router->generate(
+                    'backend_password_recovery_requirepasswordrecoverylink_confirm',
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                return $this->redirect($this->uriSigner->sign($href));
             }
         }
 
+        $objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
+        $objTemplate->usernameOrEmailExplain = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'];
+        $objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
+
+        $this->setUpTemplate($objTemplate);
+
+        return $objTemplate->getResponse();
+    }
+
+    /**
+     * @Route("/backendpasswordrecovery/requirepasswordrecoverylink/confirm", name="backend_password_recovery_requirepasswordrecoverylink_confirm")
+     */
+    public function requirepasswordrecoveryConfirmAction(): Response
+    {
+        $this->initializeContaoFramework();
+
+        /** @var Request $request */
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request || !$this->uriSigner->check($request->getUri())) {
+            return new Response('Access denied!', Response::HTTP_FORBIDDEN);
+        }
+
+        System::loadLanguageFile('default');
+        System::loadLanguageFile('modules');
+
+        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
+
+        // Show message in the backend
+        $objTemplate->doNotShowForm = true;
+        $objTemplate->confirmationMessage = $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'];
+        $objTemplate->backBT = $GLOBALS['TL_LANG']['MSC']['backBT'];
+        $objTemplate->backHref = $this->router->generate('contao_backend_login');
+
+        $this->setUpTemplate($objTemplate);
+
+        return $objTemplate->getResponse();
+    }
+
+    private function setUpTemplate(BackendTemplate &$objTemplate): void
+    {
         $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $objTemplate->theme = Backend::getTheme();
         $objTemplate->messages = Message::generate();
@@ -157,10 +200,5 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         $objTemplate->host = Backend::getDecodedHostname();
         $objTemplate->charset = Config::get('characterSet');
         $objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'];
-        $objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
-        $objTemplate->usernameOrEmailExplain = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'];
-        $objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
-
-        return $objTemplate->getResponse();
     }
 }
