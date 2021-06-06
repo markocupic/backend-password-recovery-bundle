@@ -21,14 +21,19 @@
     background-color: #0f1c26;
 }
 
-.backend-password-recovery .widget{
+.backend-password-recovery .widget {
     padding-top: 10px;
 }
 
-.backend-password-recovery .widget label{
+.backend-password-recovery .widget .tl_text {
+    margin-top: 10px;
+}
+
+.backend-password-recovery .widget label,
+.backend-password-recovery .main-inner p {
     line-height: 1.5;
 }
 
-.backend-password-recovery .widget .tl_text{
-    margin-top: 10px;
+.backend-password-recovery .main-inner {
+    padding: 45px;
 }

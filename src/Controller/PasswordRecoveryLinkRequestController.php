@@ -91,6 +91,8 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         System::loadLanguageFile('default');
         System::loadLanguageFile('modules');
 
+        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
+
         if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && '' !== $request->request->get('usernameOrEmail')) {
             $usernameOrEmail = $request->request->get('usernameOrEmail');
             $time = time();
@@ -119,7 +121,6 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                     ['token' => $token],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
-                
 
                 // Send email
                 $objEmail = new Email();
@@ -140,11 +141,13 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 $objEmail->sendTo($objUser->email);
 
                 // Show message in the backend
-                Message::addConfirmation($GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent']);
+                $objTemplate->doNotShowForm = true;
+                $objTemplate->confirmationMessage = $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'];
+                $objTemplate->backBT = $GLOBALS['TL_LANG']['MSC']['backBT'];
+                $objTemplate->backHref = $this->router->generate('contao_backend_login');
             }
         }
 
-        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
         $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $objTemplate->theme = Backend::getTheme();
         $objTemplate->messages = Message::generate();

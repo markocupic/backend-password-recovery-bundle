@@ -1,4 +1,7 @@
-/.ecs
+/docs export-ignore
+/.xml.dist export-ignore
+/.ecs export-ignore
+/.git export-ignore
 /.github export-ignore
 /tests export-ignore
 /.gitattributes export-ignore

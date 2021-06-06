@@ -19,8 +19,8 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\UriSigner;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -50,8 +50,6 @@ class ParseTemplate
      */
     private $translator;
 
-
-
     /**
      * @var UriSigner
      */
@@ -78,8 +76,12 @@ class ParseTemplate
         $this->scopeMatcher = $scopeMatcher;
     }
 
+
     /**
-     * @param $objTemplate
+     * @param Template $objTemplate
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function addPasswordRecoveryLinkToContaoBackendLoginForm(Template $objTemplate): void
     {
@@ -92,7 +94,11 @@ class ParseTemplate
                 $locale = $request->getLocale();
 
                 $href = sprintf(
-                    $request->getSchemeAndHttpHost().$this->router->generate('backend_password_recovery_requirepasswordrecoverylink').'?_locale=%s',
+                    $this->router->generate(
+                        'backend_password_recovery_requirepasswordrecoverylink',
+                        [],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ).'?_locale=%s',
                     $locale
                 );
 
@@ -114,8 +120,6 @@ class ParseTemplate
                         ]
                     );
                 }
-
-
             }
         }
     }

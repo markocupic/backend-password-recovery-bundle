@@ -85,16 +85,16 @@ class RenewPasswordController extends AbstractController
      * 3. Set tl_user.pwChange to '1'
      * 4. Redirect to Contao native "password forgot controller".
      *
-     * @Route("/backendpasswordrecovery/renewpassword/{token<[a-z0-9]+>}", name="backend_password_recovery_renewpassword", defaults={"token": "0"})
+     * @Route("/backendpasswordrecovery/renewpassword/{token}", name="backend_password_recovery_renewpassword")
      *
      * @throws Exception
      */
-    public function renewpasswordAction($token): Response
+    public function renewpasswordAction($token = null): Response
     {
         $this->initializeContaoFramework();
 
         // Check if token exists in the url -> empty('0') === true
-        if (!\strlen($token) || empty($token)) {
+        if (empty($token)) {
             return new Response('Acces denied due to missing or invalid token.', Response::HTTP_UNAUTHORIZED);
         }
 
