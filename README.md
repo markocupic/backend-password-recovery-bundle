@@ -21,7 +21,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']
 ## Bedienung
 | Nach ungültige Passworteingabe wird der "Passwort wiederherstellen Button" eingeblendet. | Benutzernamen oder E-Mail-Adresse eingeben. | Benutzer erhält eine E-Mail mit Link zugesandt und richtet sein neues Passwort ein. |
 |-|-|-|
-| <img src="./docs/print_screen_1.png" width="300"> | <img src="./docs/print_screen_2.png" width="300"> | <img src="./docs/print_screen_3.png" width="300"> |
+| <img src="./docs/print_screen_1.png"> | <img src="./docs/print_screen_2.png" width="300"> | <img src="./docs/print_screen_3.png" width="300"> |
 
 
 
