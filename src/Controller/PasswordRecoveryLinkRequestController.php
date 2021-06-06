@@ -122,7 +122,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                // Send email
+                // Send email with password recover link to the user
                 $objEmail = new Email();
                 $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
 
@@ -139,7 +139,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 // Send
                 $objEmail->sendTo($objUser->email);
 
-                // everything ok so we sign the uri & redirect to confirmation page
+                // Everything ok! We sign the uri & redirect to confirmation page
                 $href = $this->router->generate(
                     'backend_password_recovery_requirepasswordrecoverylink_confirm',
                     [],
@@ -149,7 +149,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 return $this->redirect($this->uriSigner->sign($href));
             }
         }
-
+        $objTemplate->showForm = true;
         $objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
         $objTemplate->usernameOrEmailExplain = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'];
         $objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
@@ -179,7 +179,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         $objTemplate = new BackendTemplate('be_password_recovery_link_request');
 
         // Show message in the backend
-        $objTemplate->doNotShowForm = true;
+        $objTemplate->showConfirmation = true;
         $objTemplate->confirmationMessage = $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'];
         $objTemplate->backBT = $GLOBALS['TL_LANG']['MSC']['backBT'];
         $objTemplate->backHref = $this->router->generate('contao_backend_login');
