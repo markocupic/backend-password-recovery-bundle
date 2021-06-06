@@ -114,10 +114,8 @@ class ParseTemplate
                     $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
                         [
-                            'password_recovery_button' => sprintf(
-                              $this->translator->trans('ERR.invalidBackendLogin', [], 'contao_default'),
-                              $signedUri
-                            ),
+                            'href' => $signedUri,
+                            'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),
                         ]
                     );
                 }

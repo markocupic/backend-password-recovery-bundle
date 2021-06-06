@@ -14,11 +14,11 @@
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'In der Benutzer-Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.';
-$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = 'Möchten Sie Ihr <a class="tl_submit password_recovery_button" href="%s">Passwort wiederherstellen?</a>';
 
 /**
  * Miscellaneous
  */
+$GLOBALS['TL_LANG']['MSC']['recoverPassword'] = 'Passwort wiederherstellen';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Passwort wiederherstellen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzernamen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein, um eine E-Mail-Nachricht mit dem Wiederherstellungslink zu erhalten.';

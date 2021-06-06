@@ -6,6 +6,7 @@ services:
       - '@uri_signer'
       - '@request_stack'
       - '@router'
+      - "@translator"
       - '@contao.csrf.token_manager'
       - '%contao.csrf_token_name%'
 

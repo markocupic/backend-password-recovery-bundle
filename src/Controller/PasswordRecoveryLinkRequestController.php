@@ -21,8 +21,8 @@ use Contao\CoreBundle\Controller\AbstractController;
 use Contao\Database;
 use Contao\Email;
 use Contao\Environment;
+use Contao\FrontendTemplate;
 use Contao\Message;
-use Contao\StringUtil;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -32,6 +32,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class PasswordRecoveryLinkRequestController.
@@ -56,6 +57,11 @@ class PasswordRecoveryLinkRequestController extends AbstractController
     private $router;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @var CsrfTokenManagerInterface
      */
     private $tokenManager;
@@ -65,11 +71,12 @@ class PasswordRecoveryLinkRequestController extends AbstractController
      */
     private $csrfTokenName;
 
-    public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, CsrfTokenManagerInterface $tokenManager, string $csrfTokenName)
+    public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, TranslatorInterface $translator, CsrfTokenManagerInterface $tokenManager, string $csrfTokenName)
     {
         $this->uriSigner = $uriSigner;
         $this->requestStack = $requestStack;
         $this->router = $router;
+        $this->translator = $translator;
         $this->tokenManager = $tokenManager;
         $this->csrfTokenName = $csrfTokenName;
     }
@@ -91,8 +98,6 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         System::loadLanguageFile('default');
         System::loadLanguageFile('modules');
 
-        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
-
         if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && '' !== $request->request->get('usernameOrEmail')) {
             $usernameOrEmail = $request->request->get('usernameOrEmail');
             $time = time();
@@ -104,7 +109,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
             ;
 
             if (!$objUser->numRows) {
-                Message::addError($GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed']);
+                Message::addError($this->translator->trans('ERR.pwRecoveryFailed',[], 'contao_default'));
             } else {
                 // Set renew password token
                 $token = md5(uniqid((string) mt_rand(), true));
@@ -127,11 +132,11 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
 
                 // Subject
-                $strSubject = str_replace('#host#', Environment::get('base'), $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject']);
+                $strSubject = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject',[], 'contao_default'));
                 $objEmail->subject = $strSubject;
 
                 // Text
-                $strText = str_replace('#host#', Environment::get('base'), $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']);
+                $strText = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailText',[], 'contao_default'));
                 $strText = str_replace('#link#', $strLink, $strText);
                 $strText = str_replace('#name#', $objUser->name, $strText);
                 $objEmail->text = $strText;
@@ -139,7 +144,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 // Send
                 $objEmail->sendTo($objUser->email);
 
-                // Everything ok! We sign the uri & redirect to confirmation page
+                // Everything ok! We sign the uri & redirect to the confirmation page
                 $href = $this->router->generate(
                     'backend_password_recovery_requirepasswordrecoverylink_confirm',
                     [],
@@ -149,11 +154,10 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 return $this->redirect($this->uriSigner->sign($href));
             }
         }
-        $objTemplate->showForm = true;
-        $objTemplate->usernameOrEmailPlaceholder = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'];
-        $objTemplate->usernameOrEmailExplain = $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'];
-        $objTemplate->submitButton = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['continue']);
 
+        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
+        $objTemplate->showForm = true;
+        $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $this->setUpTemplate($objTemplate);
 
         return $objTemplate->getResponse();
@@ -177,13 +181,8 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         System::loadLanguageFile('modules');
 
         $objTemplate = new BackendTemplate('be_password_recovery_link_request');
-
-        // Show message in the backend
         $objTemplate->showConfirmation = true;
-        $objTemplate->confirmationMessage = $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'];
-        $objTemplate->backBT = $GLOBALS['TL_LANG']['MSC']['backBT'];
         $objTemplate->backHref = $this->router->generate('contao_backend_login');
-
         $this->setUpTemplate($objTemplate);
 
         return $objTemplate->getResponse();
@@ -191,14 +190,11 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
     private function setUpTemplate(BackendTemplate &$objTemplate): void
     {
-        $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $objTemplate->theme = Backend::getTheme();
         $objTemplate->messages = Message::generate();
         $objTemplate->base = Environment::get('base');
         $objTemplate->language = $GLOBALS['TL_LANGUAGE'];
-        $objTemplate->title = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline']);
         $objTemplate->host = Backend::getDecodedHostname();
         $objTemplate->charset = Config::get('characterSet');
-        $objTemplate->headline = $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'];
     }
 }

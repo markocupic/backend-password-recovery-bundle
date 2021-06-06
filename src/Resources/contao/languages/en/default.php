@@ -14,11 +14,11 @@
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'No user with this username or this e-mail address was found in the user database.';
-$GLOBALS['TL_LANG']['ERR']['invalidBackendLogin'] = 'Go to <a class="tl_submit password_recovery_button" href="%s">password recovery?</a>';
 
 /**
  * Miscellaneous
  */
+$GLOBALS['TL_LANG']['MSC']['recoverPassword'] = 'Go to password recovery';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Password recovery';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'Email or your username';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Please enter your email address or username to receive an email message with the password recovery link.';
