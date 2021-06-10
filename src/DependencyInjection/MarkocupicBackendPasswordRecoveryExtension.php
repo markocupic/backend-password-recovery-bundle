@@ -35,8 +35,6 @@ class MarkocupicBackendPasswordRecoveryExtension extends Extension
         );
 
         $loader->load('services.yml');
-        $loader->load('listener.yml');
-        $loader->load('subscriber.yml');
 
     }
 }

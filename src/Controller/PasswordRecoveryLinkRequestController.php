@@ -18,6 +18,7 @@ use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Contao\Email;
 use Contao\Environment;
@@ -38,9 +39,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * Class PasswordRecoveryLinkRequestController.
  *
  * @Route(defaults={"_scope" = "backend", "_token_check" = true})
+ * @internal
  */
 class PasswordRecoveryLinkRequestController extends AbstractController
 {
+
     /**
      * @var UriSigner
      */
@@ -61,24 +64,14 @@ class PasswordRecoveryLinkRequestController extends AbstractController
      */
     private $translator;
 
-    /**
-     * @var CsrfTokenManagerInterface
-     */
-    private $tokenManager;
 
-    /**
-     * @var string
-     */
-    private $csrfTokenName;
 
-    public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, TranslatorInterface $translator, CsrfTokenManagerInterface $tokenManager, string $csrfTokenName)
+    public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, TranslatorInterface $translator)
     {
         $this->uriSigner = $uriSigner;
         $this->requestStack = $requestStack;
         $this->router = $router;
         $this->translator = $translator;
-        $this->tokenManager = $tokenManager;
-        $this->csrfTokenName = $csrfTokenName;
     }
 
     /**
@@ -157,7 +150,6 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
         $objTemplate = new BackendTemplate('be_password_recovery_link_request');
         $objTemplate->showForm = true;
-        $objTemplate->requestToken = $this->tokenManager->getToken($this->csrfTokenName)->getValue();
         $this->setUpTemplate($objTemplate);
 
         return $objTemplate->getResponse();

@@ -1,6 +1,0 @@
-services:
-    Markocupic\BackendPasswordRecoveryBundle\Subscriber\LoadAssets:
-        arguments:
-            - '@contao.routing.scope_matcher'
-        tags:
-            - { name: kernel.event_subscriber }

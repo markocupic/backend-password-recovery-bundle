@@ -22,7 +22,7 @@ use Contao\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -48,7 +48,7 @@ class InteractiveBackendLogin
     private $userChecker;
 
     /**
-     * @var Session
+     * @var SessionInterface
      */
     private $session;
 
@@ -72,7 +72,7 @@ class InteractiveBackendLogin
      */
     private $logger;
 
-    public function __construct(ContaoFramework $framework, UserChecker $userChecker, Session $session, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack, ?LoggerInterface $logger = null)
+    public function __construct(ContaoFramework $framework, UserChecker $userChecker, SessionInterface $session, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack, ?LoggerInterface $logger = null)
     {
         $this->framework = $framework;
         $this->userChecker = $userChecker;

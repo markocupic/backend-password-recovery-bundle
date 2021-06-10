@@ -1,32 +1,16 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    bind:
+      Symfony\Component\HttpKernel\UriSigner: '@uri_signer'
+      Contao\CoreBundle\Security\User\UserChecker: '@contao.security.user_checker'
 
-  Markocupic\BackendPasswordRecoveryBundle\Controller\PasswordRecoveryLinkRequestController:
-    public: true
-    arguments:
-      - '@uri_signer'
-      - '@request_stack'
-      - '@router'
-      - "@translator"
-      - '@contao.csrf.token_manager'
-      - '%contao.csrf_token_name%'
 
-  Markocupic\BackendPasswordRecoveryBundle\Controller\RenewPasswordController:
-    public: true
-    arguments:
-      - '@contao.framework'
-      - '@database_connection'
-      - '@router'
-      - '@Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin'
-      - '@security.helper'
-      - '@monolog.logger.contao'
+  Markocupic\BackendPasswordRecoveryBundle\:
+    resource: ../../
+    exclude: ../../{DependencyInjection,Resources}
 
-  Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin:
-    public: true
-    arguments:
-      - '@contao.framework'
-      - '@contao.security.user_checker'
-      - '@session'
-      - '@security.token_storage'
-      - '@event_dispatcher'
-      - '@request_stack'
-      - '@monolog.logger.contao'
+  Markocupic\BackendPasswordRecoveryBundle\Subscriber\LoadAssets:
+    tags:
+      - { name: kernel.event_subscriber }

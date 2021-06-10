@@ -27,12 +27,21 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 
 /**
  * Class ParseTemplate.
  */
+
+/**
+ * Class ParseTemplate
+ * @package Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks
+ * @Hook(ParseTemplate::HOOK)
+ */
 class ParseTemplate
 {
+    public const HOOK = 'parseTemplate';
+
     /**
      * @var ContaoFramework
      */
@@ -84,7 +93,7 @@ class ParseTemplate
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function addPasswordRecoveryLinkToContaoBackendLoginForm(Template $objTemplate): void
+    public function __invoke(Template $objTemplate): void
     {
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
