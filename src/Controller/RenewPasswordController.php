@@ -50,11 +50,6 @@ class RenewPasswordController extends AbstractController
     private $connection;
 
     /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @var InteractiveBackendLogin
      */
     private $interactiveBackendLogin;
@@ -69,11 +64,10 @@ class RenewPasswordController extends AbstractController
      */
     private $logger;
 
-    public function __construct(ContaoFramework $framework, Connection $connection, RouterInterface $router, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, ?LoggerInterface $logger = null)
+    public function __construct(ContaoFramework $framework, Connection $connection, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, ?LoggerInterface $logger = null)
     {
         $this->framework = $framework;
         $this->connection = $connection;
-        $this->router = $router;
         $this->interactiveBackendLogin = $interactiveBackendLogin;
         $this->securityHelper = $securityHelper;
         $this->logger = $logger;
