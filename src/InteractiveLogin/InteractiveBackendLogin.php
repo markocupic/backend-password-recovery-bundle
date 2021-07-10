@@ -110,7 +110,7 @@ class InteractiveBackendLogin
 
         /** @var InteractiveLoginEvent $event */
         $event = new InteractiveLoginEvent($this->requestStack->getCurrentRequest(), $token);
-        $this->eventDispatcher->dispatch('security.interactive_login', $event);
+        $this->eventDispatcher->dispatch($event, 'security.interactive_login');
 
         if (!is_a($event, InteractiveLoginEvent::class)) {
             return false;
