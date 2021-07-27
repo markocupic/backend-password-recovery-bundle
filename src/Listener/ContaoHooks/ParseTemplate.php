@@ -16,9 +16,11 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -27,15 +29,14 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use Contao\CoreBundle\ServiceAnnotation\Hook;
 
 /**
  * Class ParseTemplate.
  */
 
 /**
- * Class ParseTemplate
- * @package Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks
+ * Class ParseTemplate.
+ *
  * @Hook(ParseTemplate::HOOK)
  */
 class ParseTemplate
@@ -77,7 +78,12 @@ class ParseTemplate
      */
     private $scopeMatcher;
 
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
+    /**
+     * @var SessionInterface
+     */
+    private $session;
+
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher, SessionInterface $session)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -86,6 +92,7 @@ class ParseTemplate
         $this->uriSigner = $uriSigner;
         $this->router = $router;
         $this->scopeMatcher = $scopeMatcher;
+        $this->session = $session;
     }
 
     /**
@@ -98,8 +105,19 @@ class ParseTemplate
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
-        if ($request && $this->scopeMatcher->isBackendRequest($request)) {
+        /*
+         * Do only show the password forgotten button
+         * if the user entered the right username but a wroong password.
+         */
+        $blnInvalidUsername = false;
+        if ($this->session->getFlashBag()->has('invalidUsername')) {
+            $blnInvalidUsername = true;
+            $this->session->getFlashBag()->get('invalidUsername');
+        }
+
+        if (!$blnInvalidUsername && $request && $this->scopeMatcher->isBackendRequest($request)) {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
+
                 // Generate password recover link
                 $locale = $request->getLocale();
 
