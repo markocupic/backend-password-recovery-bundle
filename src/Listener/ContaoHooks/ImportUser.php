@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @Hook("importUser")
@@ -23,27 +23,24 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ImportUser
 {
     /**
-     * @var SessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
     }
 
     /**
      * Do only show the password forgotten button
-     * if the user entered the right username but a wroong password.
-     * @param string $username
-     * @param string $password
-     * @param string $table
-     * @return bool
+     * if the user entered the right username but a wrong password.
      */
     public function __invoke(string $username, string $password, string $table): bool
     {
         if ('tl_user' === $table) {
-            $this->session
+            $session = $this->requestStack->getCurrentRequest()->getSession();
+            $session
                 ->getFlashBag()
                 ->set('invalidUsername', $username)
             ;

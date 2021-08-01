@@ -78,12 +78,7 @@ class ParseTemplate
      */
     private $scopeMatcher;
 
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher, SessionInterface $session)
+    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
     {
         $this->framework = $framework;
         $this->requestStack = $requestStack;
@@ -92,7 +87,6 @@ class ParseTemplate
         $this->uriSigner = $uriSigner;
         $this->router = $router;
         $this->scopeMatcher = $scopeMatcher;
-        $this->session = $session;
     }
 
     /**
@@ -105,14 +99,16 @@ class ParseTemplate
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
+        $session = $request->getSession();
+
         /*
          * Do only show the password forgotten button
          * if the user entered the right username but a wroong password.
          */
         $blnInvalidUsername = false;
-        if ($this->session->getFlashBag()->has('invalidUsername')) {
+        if ($session->getFlashBag()->has('invalidUsername')) {
             $blnInvalidUsername = true;
-            $this->session->getFlashBag()->get('invalidUsername');
+            $session->getFlashBag()->get('invalidUsername');
         }
 
         if (!$blnInvalidUsername && $request && $this->scopeMatcher->isBackendRequest($request)) {
