@@ -41,7 +41,7 @@ class LoadAssets implements EventSubscriberInterface
         $request = $e->getRequest();
 
         if ($request && $this->scopeMatcher->isBackendRequest($request)) {
-            $GLOBALS['TL_CSS'][] = 'bundles/markocupicbackendpasswordrecovery/stylesheet.css';
+            $GLOBALS['TL_CSS'][] = 'bundles/markocupicbackendpasswordrecovery/stylesheet.min.css';
         }
     }
 }
