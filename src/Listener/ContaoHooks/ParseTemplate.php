@@ -99,6 +99,11 @@ class ParseTemplate
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
+        // Skip listener if wu have a cron request
+        if (null === $request){
+            return;
+        }
+
         $session = $request->getSession();
 
         /*
