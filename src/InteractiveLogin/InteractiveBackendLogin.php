@@ -105,7 +105,7 @@ class InteractiveBackendLogin
         $this->tokenStorage->setToken($token);
 
         // Save the token to the session
-        $this->session->set('_security_'.$providerKey, serialize($token));
+        $this->session->set('_security_'.self::SECURED_AREA_BACKEND, serialize($token));
         $this->session->save();
 
         /** @var InteractiveLoginEvent $event */
