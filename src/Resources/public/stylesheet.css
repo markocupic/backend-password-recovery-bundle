@@ -23,7 +23,7 @@
 }
 
 .tl_require_password_link_form .formbody {
-    padding-bottom: 0;
+    padding-bottom: 45px;
 }
 
 .backend-password-recovery .widget {
@@ -40,5 +40,5 @@
 }
 
 .backend-password-recovery .main-inner {
-    padding: 45px 45px 0 45px;
+    padding: 45px;
 }
