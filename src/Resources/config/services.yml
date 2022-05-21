@@ -4,8 +4,6 @@ services:
     autoconfigure: true
     bind:
       Symfony\Component\HttpKernel\UriSigner: '@uri_signer'
-      Contao\CoreBundle\Security\User\UserChecker: '@contao.security.user_checker'
-
 
   Markocupic\BackendPasswordRecoveryBundle\:
     resource: ../../

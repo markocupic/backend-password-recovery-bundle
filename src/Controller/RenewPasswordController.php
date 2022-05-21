@@ -6,7 +6,7 @@ declare(strict_types=1);
  * This file is part of Backend Password Recovery Bundle.
  *
  * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
- * @license GPL-3.0-or-later
+ * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
  * @link https://github.com/markocupic/backend-password-recovery-bundle
@@ -38,30 +38,11 @@ class RenewPasswordController extends AbstractController
 {
     public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
 
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
-
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var InteractiveBackendLogin
-     */
-    private $interactiveBackendLogin;
-
-    /**
-     * @var Security
-     */
-    private $securityHelper;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private ContaoFramework $framework;
+    private Connection $connection;
+    private InteractiveBackendLogin $interactiveBackendLogin;
+    private Security $securityHelper;
+    private ?LoggerInterface $logger;
 
     public function __construct(ContaoFramework $framework, Connection $connection, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, LoggerInterface $logger = null)
     {

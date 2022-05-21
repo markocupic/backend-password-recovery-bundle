@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -14,13 +14,11 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
 
-use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -43,44 +41,15 @@ class ParseTemplate
 {
     public const HOOK = 'parseTemplate';
 
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
+    private RequestStack $requestStack;
+    private Environment $twig;
+    private TranslatorInterface $translator;
+    private UriSigner $uriSigner;
+    private RouterInterface $router;
+    private ScopeMatcher $scopeMatcher;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @var UriSigner
-     */
-    private $uriSigner;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var ScopeMatcher
-     */
-    private $scopeMatcher;
-
-    public function __construct(ContaoFramework $framework, RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
+    public function __construct(RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
     {
-        $this->framework = $framework;
         $this->requestStack = $requestStack;
         $this->twig = $twig;
         $this->translator = $translator;
@@ -100,7 +69,7 @@ class ParseTemplate
         $request = $this->requestStack->getCurrentRequest();
 
         // Skip listener if wu have a cron request
-        if (null === $request){
+        if (null === $request) {
             return;
         }
 
@@ -111,14 +80,14 @@ class ParseTemplate
          * if the user entered the right username but a wroong password.
          */
         $blnInvalidUsername = false;
+
         if ($session->getFlashBag()->has('invalidUsername')) {
             $blnInvalidUsername = true;
             $session->getFlashBag()->get('invalidUsername');
         }
 
-        if (!$blnInvalidUsername && $request && $this->scopeMatcher->isBackendRequest($request)) {
+        if (!$blnInvalidUsername && $this->scopeMatcher->isBackendRequest($request)) {
             if (0 === strpos($objTemplate->getName(), 'be_login')) {
-
                 // Generate password recover link
                 $locale = $request->getLocale();
 
