@@ -5,8 +5,8 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
- * @license MIT
+ * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * @license GPL-3.0-or-later
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
  * @link https://github.com/markocupic/backend-password-recovery-bundle
@@ -27,7 +27,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -37,7 +36,7 @@ use Symfony\Component\Security\Core\Security;
  */
 class RenewPasswordController extends AbstractController
 {
-    const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
+    public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
 
     /**
      * @var ContaoFramework
@@ -64,7 +63,7 @@ class RenewPasswordController extends AbstractController
      */
     private $logger;
 
-    public function __construct(ContaoFramework $framework, Connection $connection, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, ?LoggerInterface $logger = null)
+    public function __construct(ContaoFramework $framework, Connection $connection, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, LoggerInterface $logger = null)
     {
         $this->framework = $framework;
         $this->connection = $connection;
@@ -93,22 +92,25 @@ class RenewPasswordController extends AbstractController
         }
 
         // Get user from token.
-        $stmt = $this->connection->prepare('SELECT * FROM tl_user WHERE activation=? AND disable=? AND (start=? OR start<?) AND (stop=? OR stop>?) LIMIT 0,1');
-        $stmt->bindValue(1, $token);
-        $stmt->bindValue(2, '');
-        $stmt->bindValue(3, '');
-        $stmt->bindValue(4, time());
-        $stmt->bindValue(5, '');
-        $stmt->bindValue(6, time());
-        $stmt->execute();
+        $result = $this->connection->executeQuery(
+            'SELECT * FROM tl_user WHERE activation = ? AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?) LIMIT 0,1',
+            [
+                $token,
+                '',
+                '',
+                time(),
+                '',
+                time(),
+            ]
+        );
 
         $strErrorMsg = 'Backend user not found. Perhaps your token has expired. Please try to restore your password again.';
 
-        if (!($arrUsers = $stmt->fetchAll())) {
+        if (false === ($arrUsers = $result->fetchAssociative())) {
             return new Response($strErrorMsg, Response::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS);
         }
 
-        $username = $arrUsers[0]['username'];
+        $username = $arrUsers['username'];
 
         // Interactive login
         if (!$this->interactiveBackendLogin->login($username)) {
@@ -119,7 +121,7 @@ class RenewPasswordController extends AbstractController
         $user = $this->securityHelper->getUser();
 
         // Validate
-        if (!$user instanceof BackendUser || $user->getUsername() !== $username) {
+        if (!$user instanceof BackendUser || $user->getUserIdentifier() !== $username) {
             return new Response($strErrorMsg, Response::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS);
         }
 
