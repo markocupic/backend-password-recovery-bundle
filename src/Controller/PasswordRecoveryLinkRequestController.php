@@ -122,7 +122,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
                 // Send email with password recover link to the user
                 $objEmail = new Email();
-                $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'];
+                $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'] ?? Config::get('adminEmail');
 
                 // Subject
                 $strSubject = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject',[], 'contao_default'));
