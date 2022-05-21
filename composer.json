@@ -22,8 +22,8 @@
     "source": "https://github.com/markocupic/backend-password-recovery-bundle"
   },
   "require": {
-    "php": "^7.2 || ^8.0",
-    "contao/core-bundle": "^4.9"
+    "php": "^7.4 || ^8.0",
+    "contao/core-bundle": "^4.13"
   },
   "require-dev": {
     "contao/easy-coding-standard": "^4.0",
