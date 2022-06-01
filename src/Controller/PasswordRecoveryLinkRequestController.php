@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2021 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -18,9 +18,11 @@ use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Contao\Email;
 use Contao\Environment;
+use Contao\FrontendTemplate;
 use Contao\Message;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,21 +32,39 @@ use Symfony\Component\HttpKernel\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class PasswordRecoveryLinkRequestController.
  *
  * @Route(defaults={"_scope" = "backend", "_token_check" = true})
- *
  * @internal
  */
 class PasswordRecoveryLinkRequestController extends AbstractController
 {
-    private UriSigner $uriSigner;
-    private RequestStack $requestStack;
-    private RouterInterface $router;
-    private TranslatorInterface $translator;
+
+    /**
+     * @var UriSigner
+     */
+    private $uriSigner;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+
 
     public function __construct(UriSigner $uriSigner, RequestStack $requestStack, RouterInterface $router, TranslatorInterface $translator)
     {
@@ -82,7 +102,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
             ;
 
             if (!$objUser->numRows) {
-                Message::addError($this->translator->trans('ERR.pwRecoveryFailed', [], 'contao_default'));
+                Message::addError($this->translator->trans('ERR.pwRecoveryFailed',[], 'contao_default'));
             } else {
                 // Set renew password token
                 $token = md5(uniqid((string) mt_rand(), true));
@@ -100,16 +120,16 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
 
-                // Send email with password recovery link to the user
+                // Send email with password recover link to the user
                 $objEmail = new Email();
                 $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'] ?? Config::get('adminEmail');
 
                 // Subject
-                $strSubject = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject', [], 'contao_default'));
+                $strSubject = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject',[], 'contao_default'));
                 $objEmail->subject = $strSubject;
 
                 // Text
-                $strText = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailText', [], 'contao_default'));
+                $strText = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailText',[], 'contao_default'));
                 $strText = str_replace('#link#', $strLink, $strText);
                 $strText = str_replace('#name#', $objUser->name, $strText);
                 $objEmail->text = $strText;
