@@ -16,9 +16,10 @@ namespace Markocupic\BackendPasswordRecoveryBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- * Configures the backend-password-recovery bundle.
- */
 class MarkocupicBackendPasswordRecoveryBundle extends Bundle
 {
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
 }

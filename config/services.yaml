@@ -6,8 +6,8 @@ services:
       Symfony\Component\HttpKernel\UriSigner: '@uri_signer'
 
   Markocupic\BackendPasswordRecoveryBundle\:
-    resource: ../../
-    exclude: ../../{DependencyInjection,Resources}
+    resource: ../src/
+    exclude: ../src/{DependencyInjection}
 
   Markocupic\BackendPasswordRecoveryBundle\Subscriber\LoadAssets:
     tags:
