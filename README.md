@@ -1,6 +1,5 @@
 <img src="./docs/logo.png" width="300">
 
-
 # Contao Backend Password Recovery Bundle
 Senden Sie Benutzern niemals Passwörter über E-Mail. 
 
@@ -40,6 +39,5 @@ Mit  `$this->recoverPasswordLink` bekommst du im Login Template "be_login.html5"
   <!-- Show password forgot link -->
   <a href="<?= $this->recoverPasswordLink ?>" class="footer_preview"><?= $this->forgotPassword ?> ›</a>
 </div>
-
  
 ```

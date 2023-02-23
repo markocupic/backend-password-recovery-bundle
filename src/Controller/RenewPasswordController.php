@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Contao\BackendUser;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
@@ -24,9 +25,9 @@ use Doctrine\DBAL\Exception;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 
 #[Route('/backendpasswordrecovery/renewpassword/{token}', name: 'backend_password_recovery_renewpassword', defaults: ['_scope' => 'backend'])]
 class RenewPasswordController extends AbstractController
@@ -37,7 +38,7 @@ class RenewPasswordController extends AbstractController
         private readonly ContaoFramework $framework,
         private readonly Connection $connection,
         private readonly InteractiveBackendLogin $interactiveBackendLogin,
-        private readonly Security $securityHelper,
+        private readonly Security $security,
         private readonly LoggerInterface|null $logger = null,
     ) {
     }
@@ -86,7 +87,7 @@ class RenewPasswordController extends AbstractController
         }
 
         // Get logged in backend user
-        $user = $this->securityHelper->getUser();
+        $user = $this->security->getUser();
 
         // Validate
         if (!$user instanceof BackendUser || $user->getUserIdentifier() !== $username) {
@@ -94,14 +95,16 @@ class RenewPasswordController extends AbstractController
         }
 
         // Trigger Contao post login Hook
-        if (!empty($GLOBALS['TL_HOOKS']['postLogin']) && \is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
-            @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
+        if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
+            if (!empty($GLOBALS['TL_HOOKS']['postLogin']) && \is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
+                @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
 
-            /** @var System $systemAdapter */
-            $systemAdapter = $this->framework->getAdapter(System::class);
+                /** @var System $systemAdapter */
+                $systemAdapter = $this->framework->getAdapter(System::class);
 
-            foreach ($GLOBALS['TL_HOOKS']['postLogin'] as $callback) {
-                $systemAdapter->importStatic($callback[0])->{$callback[1]}($user);
+                foreach ($GLOBALS['TL_HOOKS']['postLogin'] as $callback) {
+                    $systemAdapter->importStatic($callback[0])->{$callback[1]}($user);
+                }
             }
         }
 

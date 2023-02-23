@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin;
 
 use Contao\BackendUser;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Security\User\ContaoUserProvider;
 use Psr\Log\LoggerInterface;
@@ -41,17 +42,20 @@ class InteractiveBackendLogin
     {
         $this->framework->initialize();
         $session = $this->requestStack->getCurrentRequest()->getSession();
-
-        $strFirewall = static::SECURED_AREA_BACKEND;
-
         $userClass = BackendUser::class;
 
         // Retrieve user by its username
-        $userProvider = new ContaoUserProvider($this->framework, $session, $userClass, $this->logger);
-
-        $user = $userProvider->loadUserByIdentifier($username);
-
-        $authenticatedToken = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
+        if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
+            // Contao 4.x
+            $userProvider = new ContaoUserProvider($this->framework, $session, $userClass, $this->logger);
+            $user = $userProvider->loadUserByIdentifier($username);
+            $authenticatedToken = new UsernamePasswordToken($user, null, static::SECURED_AREA_BACKEND, $user->getRoles());
+        } else {
+            // Contao 5.x
+            $userProvider = new ContaoUserProvider($this->framework, $userClass);
+            $user = $userProvider->loadUserByIdentifier($username);
+            $authenticatedToken = new UsernamePasswordToken($user, static::SECURED_AREA_BACKEND, $user->getRoles());
+        }
 
         if (!is_a($authenticatedToken, UsernamePasswordToken::class)) {
             return false;

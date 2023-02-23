@@ -18,6 +18,7 @@ use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Util\LocaleUtil;
 use Contao\Database;
 use Contao\Email;
 use Contao\Environment;
@@ -147,10 +148,12 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
     private function setUpTemplate(BackendTemplate &$objTemplate): void
     {
+        $request = $this->requestStack->getCurrentRequest();
+
         $objTemplate->theme = Backend::getTheme();
         $objTemplate->messages = Message::generate();
         $objTemplate->base = Environment::get('base');
-        $objTemplate->language = $GLOBALS['TL_LANGUAGE'];
+        $objTemplate->language = LocaleUtil::formatAsLanguageTag($request->getLocale());
         $objTemplate->host = Backend::getDecodedHostname();
         $objTemplate->charset = Config::get('characterSet');
     }
