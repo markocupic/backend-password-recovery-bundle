@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -20,62 +20,50 @@ use Contao\CoreBundle\Security\User\ContaoUserProvider;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
-/**
- * Class InteractiveLogin.
- */
 class InteractiveBackendLogin
 {
     public const SECURED_AREA_BACKEND = 'contao_backend';
 
-    private ContaoFramework $framework;
-    private SessionInterface $session;
-    private TokenStorageInterface $tokenStorage;
-    private EventDispatcherInterface $eventDispatcher;
-    private RequestStack $requestStack;
-    private ?LoggerInterface $logger;
-
-    public function __construct(ContaoFramework $framework, SessionInterface $session, TokenStorageInterface $tokenStorage, EventDispatcherInterface $eventDispatcher, RequestStack $requestStack, LoggerInterface $logger = null)
-    {
-        $this->framework = $framework;
-        $this->session = $session;
-        $this->tokenStorage = $tokenStorage;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly ContaoFramework $framework,
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly RequestStack $requestStack,
+        private readonly LoggerInterface|null $logger = null,
+    ) {
     }
 
     public function login(string $username): bool
     {
         $this->framework->initialize();
+        $session = $this->requestStack->getCurrentRequest()->getSession();
 
         $strFirewall = static::SECURED_AREA_BACKEND;
 
         $userClass = BackendUser::class;
 
         // Retrieve user by its username
-        $userProvider = new ContaoUserProvider($this->framework, $this->session, $userClass, $this->logger);
+        $userProvider = new ContaoUserProvider($this->framework, $session, $userClass, $this->logger);
 
         $user = $userProvider->loadUserByIdentifier($username);
 
-        $token = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
+        $authenticatedToken = new UsernamePasswordToken($user, null, $strFirewall, $user->getRoles());
 
-        if (!is_a($token, UsernamePasswordToken::class)) {
+        if (!is_a($authenticatedToken, UsernamePasswordToken::class)) {
             return false;
         }
 
-        $this->tokenStorage->setToken($token);
+        $this->tokenStorage->setToken($authenticatedToken);
 
         // Save the token to the session
-        $this->session->set('_security_'.self::SECURED_AREA_BACKEND, serialize($token));
-        $this->session->save();
+        $session->set('_security_'.self::SECURED_AREA_BACKEND, serialize($authenticatedToken));
+        $session->save();
 
-        /** @var InteractiveLoginEvent $event */
-        $event = new InteractiveLoginEvent($this->requestStack->getCurrentRequest(), $token);
+        $event = new InteractiveLoginEvent($this->requestStack->getCurrentRequest(), $authenticatedToken);
         $this->eventDispatcher->dispatch($event, 'security.interactive_login');
 
         if (!is_a($event, InteractiveLoginEvent::class)) {
@@ -83,7 +71,7 @@ class InteractiveBackendLogin
         }
 
         /** @var BackendUser $user */
-        $user = $token->getUser();
+        $user = $authenticatedToken->getUser();
 
         if ($user instanceof BackendUser) {
             if ($username === $user->username) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -26,8 +26,10 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'Email or your userna
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Please enter your email address or username to receive an email message with the password recovery link.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'forgot password';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'You will shortly receive an email with instructions on how to restore your password. Also check your spam directory if the message is not in your inbox.';
+
 // Email subject
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Your password request on #host#';
+
 // Email text
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
 Hi #name#

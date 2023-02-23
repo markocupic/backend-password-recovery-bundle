@@ -5,17 +5,17 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
  * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
-namespace Markocupic\BackendPasswordRecoveryBundle\Listener\ContaoHooks;
+namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\ContaoHook;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,34 +28,19 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-/**
- * Class ParseTemplate.
- */
-
-/**
- * Class ParseTemplate.
- *
- * @Hook(ParseTemplate::HOOK)
- */
+#[AsHook(ParseTemplate::HOOK)]
 class ParseTemplate
 {
     public const HOOK = 'parseTemplate';
 
-    private RequestStack $requestStack;
-    private Environment $twig;
-    private TranslatorInterface $translator;
-    private UriSigner $uriSigner;
-    private RouterInterface $router;
-    private ScopeMatcher $scopeMatcher;
-
-    public function __construct(RequestStack $requestStack, Environment $twig, TranslatorInterface $translator, UriSigner $uriSigner, RouterInterface $router, ScopeMatcher $scopeMatcher)
-    {
-        $this->requestStack = $requestStack;
-        $this->twig = $twig;
-        $this->translator = $translator;
-        $this->uriSigner = $uriSigner;
-        $this->router = $router;
-        $this->scopeMatcher = $scopeMatcher;
+    public function __construct(
+        private readonly RequestStack $requestStack,
+        private readonly Environment $twig,
+        private readonly TranslatorInterface $translator,
+        private readonly UriSigner $uriSigner,
+        private readonly RouterInterface $router,
+        private readonly ScopeMatcher $scopeMatcher,
+    ) {
     }
 
     /**
@@ -77,7 +62,7 @@ class ParseTemplate
 
         /*
          * Do only show the password forgotten button
-         * if the user entered the right username but a wroong password.
+         * if the user entered the right username but a wrong password.
          */
         $blnInvalidUsername = false;
 
@@ -87,7 +72,7 @@ class ParseTemplate
         }
 
         if (!$blnInvalidUsername && $this->scopeMatcher->isBackendRequest($request)) {
-            if (0 === strpos($objTemplate->getName(), 'be_login')) {
+            if (str_starts_with($objTemplate->getName(), 'be_login')) {
                 // Generate password recover link
                 $locale = $request->getLocale();
 
@@ -107,7 +92,7 @@ class ParseTemplate
                 $objTemplate->forgotPassword = $this->translator->trans('MSC.forgotPassword', [], 'contao_default');
 
                 // Show reset password link if login has failed
-                if (false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || false !== strpos($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
+                if (str_contains($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || str_contains($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
                     $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
                         [

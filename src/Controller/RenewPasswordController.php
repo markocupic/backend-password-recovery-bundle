@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -21,7 +21,6 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -29,28 +28,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
-/**
- * Class RenewPasswordController.
- *
- * @Route(defaults={"_scope" = "backend"})
- */
+#[Route('/backendpasswordrecovery/renewpassword/{token}', name: 'backend_password_recovery_renewpassword', defaults: ['_scope' => 'backend'])]
 class RenewPasswordController extends AbstractController
 {
     public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
 
-    private ContaoFramework $framework;
-    private Connection $connection;
-    private InteractiveBackendLogin $interactiveBackendLogin;
-    private Security $securityHelper;
-    private ?LoggerInterface $logger;
-
-    public function __construct(ContaoFramework $framework, Connection $connection, InteractiveBackendLogin $interactiveBackendLogin, Security $securityHelper, LoggerInterface $logger = null)
-    {
-        $this->framework = $framework;
-        $this->connection = $connection;
-        $this->interactiveBackendLogin = $interactiveBackendLogin;
-        $this->securityHelper = $securityHelper;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly ContaoFramework $framework,
+        private readonly Connection $connection,
+        private readonly InteractiveBackendLogin $interactiveBackendLogin,
+        private readonly Security $securityHelper,
+        private readonly LoggerInterface|null $logger = null,
+    ) {
     }
 
     /**
@@ -59,17 +48,15 @@ class RenewPasswordController extends AbstractController
      * 3. Set tl_user.pwChange to '1'
      * 4. Redirect to Contao native "password forgot controller".
      *
-     * @Route("/backendpasswordrecovery/renewpassword/{token}", name="backend_password_recovery_renewpassword")
-     *
      * @throws Exception
      */
-    public function renewpasswordAction($token = null): Response
+    public function __invoke($token = null): Response
     {
         $this->initializeContaoFramework();
 
         // Check if token exists in the url -> empty('0') === true
         if (empty($token)) {
-            return new Response('Acces denied due to missing or invalid token.', Response::HTTP_UNAUTHORIZED);
+            return new Response('Access denied due to missing or invalid token.', Response::HTTP_UNAUTHORIZED);
         }
 
         // Get user from token.
@@ -118,28 +105,19 @@ class RenewPasswordController extends AbstractController
             }
         }
 
-        /** @var QueryBuilder $qb */
-        $qb = $this->connection->createQueryBuilder();
-
         // Reset token, loginAttempts, etc.
         // and set pwChange to "1"
-        // thats the way we can use the contao native "password forgot controller".
-        $qb->update('tl_user', 'u')
-            ->set('u.pwChange', ':pwChange')
-            ->set('u.activation', ':activation')
-            ->set('u.loginAttempts', ':loginAttempts')
-            ->set('u.locked', ':locked')
-            ->where('u.id = :id')
-            ->setParameter('pwChange', '1', \PDO::PARAM_STR)
-            ->setParameter('activation', '', \PDO::PARAM_STR)
-            ->setParameter('loginAttempts', 0, \PDO::PARAM_INT)
-            ->setParameter('locked', 0, \PDO::PARAM_INT)
-            ->setParameter('id', (int) $user->id, \PDO::PARAM_INT)
-        ;
+        // this is the way we can use the contao native "password forgot controller".
+        $set = [
+            'pwChange' => '1',
+            'activation' => '',
+            'loginAttempts' => 0,
+            'locked' => 0,
+        ];
 
-        $qb->execute();
+        $this->connection->update('tl_user', $set, ['id' => (int) $user->id]);
 
-        // Log
+        // Contao system log entry
         if ($this->logger) {
             $strText = sprintf('Backend user "%s" has recovered his password.', $username);
             $this->logger->log(
@@ -149,7 +127,7 @@ class RenewPasswordController extends AbstractController
             );
         }
 
-        // Redirects to the "contao_backend_password" route.
+        // Redirect to the "contao_backend_password" route.
         return $this->redirectToRoute('contao_backend_password');
     }
 }

@@ -8,7 +8,3 @@ services:
   Markocupic\BackendPasswordRecoveryBundle\:
     resource: ../src/
     exclude: ../src/{DependencyInjection}
-
-  Markocupic\BackendPasswordRecoveryBundle\Subscriber\LoadAssets:
-    tags:
-      - { name: kernel.event_subscriber }

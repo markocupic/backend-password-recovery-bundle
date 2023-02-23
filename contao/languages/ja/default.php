@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2022 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -15,7 +15,7 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'No user with this username or this e-mail address was found in the user database.';
+$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'このユーザー名またはこの電子メール アドレスを持つユーザーは、ユーザー データベースに見つかりませんでした。';
 
 /*
  * Miscellaneous
@@ -26,8 +26,10 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = '電子メールま�
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = '電子メールアドレスまたはユーザー名を入力するとパスワードの回復のリンクを含んだ電子メールのメッセージを受信できます。';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'パスワード忘れ';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'まもなくパスワードを回復の仕方の手順の電子メールが届きます。受信箱に届かない場合は迷惑メールの確認もしてください。';
+
 // Email subject
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = '#host#でパスワード要求';
+
 // Email text
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
 こんにちは#name#さん。
