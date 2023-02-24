@@ -17,7 +17,9 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Util\LocaleUtil;
 use Contao\Email;
 use Contao\Environment;
@@ -43,6 +45,7 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         private readonly RequestStack $requestStack,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
+        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
     ) {
     }
 
@@ -161,5 +164,9 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         $objTemplate->language = LocaleUtil::formatAsLanguageTag($request->getLocale());
         $objTemplate->host = Backend::getDecodedHostname();
         $objTemplate->charset = Config::get('characterSet');
+
+        if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
+            $objTemplate->requestToken = $this->contaoCsrfTokenManager->getDefaultTokenValue();
+        }
     }
 }

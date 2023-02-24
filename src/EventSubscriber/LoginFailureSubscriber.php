@@ -40,9 +40,8 @@ class LoginFailureSubscriber implements EventSubscriberInterface
             $session->start();
             $session
                 ->getFlashBag()
-                ->set('invalidUsername', $user->getUserIdentifier())
+                ->set('loginAttemptHasValidUsernameButInvalidPassword', $user->getUserIdentifier())
          ;
-
         }
     }
 }
