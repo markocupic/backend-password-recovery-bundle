@@ -12,12 +12,13 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
-/*
+/**
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'In der Benutzer-Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.';
+$GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'Passwortrückstellung fehlgeschlagen. Möglicherweise ist das Sicherheitstoken abgelaufen. Probieren Sie bitte das Passwort erneut zurückzusetzen.';
 
-/*
+/**
  * Miscellaneous
  */
 $GLOBALS['TL_LANG']['MSC']['recoverPassword'] = 'Passwort wiederherstellen';
@@ -27,10 +28,10 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Bitte geben Sie Ihre E-M
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'Passwort vergessen';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Sie erhalten nun in Kürze eine E-Mail mit Hinweisen, wie Sie Ihr Passwort wiederherstellen können. Prüfen Sie auch Ihr Spamverzeichnis, falls sich die Nachricht nicht in Ihrem Posteingang befinden sollte.';
 
-// Email subject
+/**
+ * Email
+ */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Ihre Passwort-Anforderung für #host#';
-
-// Email text
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
 Hallo #name#
 

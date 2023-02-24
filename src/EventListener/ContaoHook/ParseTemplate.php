@@ -53,12 +53,13 @@ class ParseTemplate
         /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
-        // Skip listener if wu have a cron request
+        // Skip listener if we have a cron request
         if (null === $request) {
             return;
         }
 
         $session = $request->getSession();
+        $session->start();
 
         /*
          * Do only show the password forgotten button
@@ -67,11 +68,11 @@ class ParseTemplate
         $blnInvalidUsername = false;
 
         if ($session->getFlashBag()->has('invalidUsername')) {
-            $blnInvalidUsername = true;
             $session->getFlashBag()->get('invalidUsername');
+            $blnInvalidUsername = true;
         }
 
-        if (!$blnInvalidUsername && $this->scopeMatcher->isBackendRequest($request)) {
+        if ($blnInvalidUsername && $this->scopeMatcher->isBackendRequest($request)) {
             if (str_starts_with($objTemplate->getName(), 'be_login')) {
                 // Generate password recover link
                 $locale = $request->getLocale();
@@ -92,7 +93,7 @@ class ParseTemplate
                 $objTemplate->forgotPassword = $this->translator->trans('MSC.forgotPassword', [], 'contao_default');
 
                 // Show reset password link if login has failed
-                if (str_contains($objTemplate->messages, substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || str_contains($objTemplate->messages, substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
+                if ($blnInvalidUsername) {
                     $objTemplate->messages .= $this->twig->render(
                         '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
                         [

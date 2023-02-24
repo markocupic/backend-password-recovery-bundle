@@ -13,5 +13,5 @@ declare(strict_types=1);
  */
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['activation'] = [
-    'sql' => "varchar(64) NOT NULL default ''",
+    'sql' => "varchar(256) NOT NULL default ''",
 ];

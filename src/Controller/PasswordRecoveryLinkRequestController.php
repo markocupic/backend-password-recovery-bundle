@@ -17,16 +17,14 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Config;
-use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Controller\AbstractController;
-use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Util\LocaleUtil;
-use Contao\Database;
 use Contao\Email;
 use Contao\Environment;
 use Contao\Message;
 use Contao\System;
-use Symfony\Component\HttpFoundation\Request;
+use Doctrine\DBAL\Connection;
+use Markocupic\BackendPasswordRecoveryBundle\Util\Crypt;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\UriSigner;
@@ -39,11 +37,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PasswordRecoveryLinkRequestController extends AbstractController
 {
     public function __construct(
+        private readonly Crypt $crypt,
+        private readonly Connection $connection,
         private readonly UriSigner $uriSigner,
         private readonly RequestStack $requestStack,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
-        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
     ) {
     }
 
@@ -52,7 +51,6 @@ class PasswordRecoveryLinkRequestController extends AbstractController
     {
         $this->initializeContaoFramework();
 
-        /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
         if (!$request || !$this->uriSigner->check($request->getUri())) {
@@ -66,29 +64,34 @@ class PasswordRecoveryLinkRequestController extends AbstractController
             $usernameOrEmail = $request->request->get('usernameOrEmail');
             $time = time();
 
-            $objUser = Database::getInstance()
-                ->prepare("SELECT * FROM tl_user WHERE (email LIKE ? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)")
-                ->limit(1)
-                ->execute($usernameOrEmail, $usernameOrEmail)
-            ;
+            $rowUser = $this->connection->fetchAssociative(
+                "SELECT * FROM tl_user WHERE (email LIKE ? OR username=?) AND disable='' AND (start='' OR start<$time) AND (stop='' OR stop>$time)",
+                [
+                    $usernameOrEmail,
+                    $usernameOrEmail,
+                ],
+            );
 
-            if (!$objUser->numRows) {
+            if (!$rowUser) {
                 Message::addError($this->translator->trans('ERR.pwRecoveryFailed', [], 'contao_default'));
             } else {
                 // Set renew password token
-                $token = md5(uniqid((string) mt_rand(), true));
+                $expiry = time() + 900; // 15 min
 
-                // Write token to db
-                Database::getInstance()
-                    ->prepare('UPDATE tl_user SET activation=? WHERE id=?')
-                    ->execute($token, $objUser->id)
-                ;
+                $iv = $this->crypt->getInitializationVector();
+                $encryptedToken = $this->crypt->encrypt((string) $expiry, $iv);
+
+                $set = [
+                    'activation' => sprintf('%s--%s', $iv, $encryptedToken),
+                ];
+
+                $this->connection->update('tl_user', $set, ['id' => $rowUser['id']]);
 
                 // Generate renew password link
                 $strLink = $this->router->generate(
                     'backend_password_recovery_renewpassword',
-                    ['token' => $token],
-                    UrlGeneratorInterface::ABSOLUTE_URL
+                    ['token' => $encryptedToken],
+                    UrlGeneratorInterface::ABSOLUTE_URL,
                 );
 
                 // Send email with password recover link to the user
@@ -102,13 +105,13 @@ class PasswordRecoveryLinkRequestController extends AbstractController
                 // Text
                 $strText = str_replace('#host#', Environment::get('base'), $this->translator->trans('MSC.pwRecoveryEmailText', [], 'contao_default'));
                 $strText = str_replace('#link#', $strLink, $strText);
-                $strText = str_replace('#name#', $objUser->name, $strText);
+                $strText = str_replace('#name#', $rowUser['name'], $strText);
                 $objEmail->text = $strText;
 
                 // Send
-                $objEmail->sendTo($objUser->email);
+                $objEmail->sendTo($rowUser['email']);
 
-                // Everything ok! We sign the uri & redirect to the confirmation page
+                // Everything ok! Sign the uri & redirect to the confirmation page
                 $href = $this->router->generate(
                     'backend_password_recovery_requirepasswordrecoverylink_confirm',
                     [],
@@ -131,7 +134,6 @@ class PasswordRecoveryLinkRequestController extends AbstractController
     {
         $this->initializeContaoFramework();
 
-        /** @var Request $request */
         $request = $this->requestStack->getCurrentRequest();
 
         if (!$request || !$this->uriSigner->check($request->getUri())) {
@@ -159,9 +161,5 @@ class PasswordRecoveryLinkRequestController extends AbstractController
         $objTemplate->language = LocaleUtil::formatAsLanguageTag($request->getLocale());
         $objTemplate->host = Backend::getDecodedHostname();
         $objTemplate->charset = Config::get('characterSet');
-
-        if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
-            $objTemplate->requestToken = $this->contaoCsrfTokenManager->getDefaultTokenValue();
-        }
     }
 }

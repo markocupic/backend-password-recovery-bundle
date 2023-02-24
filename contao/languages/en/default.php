@@ -16,8 +16,9 @@ declare(strict_types=1);
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'No user with this username or this e-mail address was found in the user database.';
+$GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'Password reset failed. The security token may have expired. Please try to reset the password again.';
 
-/*
+/**
  * Miscellaneous
  */
 $GLOBALS['TL_LANG']['MSC']['recoverPassword'] = 'Go to password recovery';
@@ -27,10 +28,10 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Please enter your email 
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'forgot password';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'You will shortly receive an email with instructions on how to restore your password. Also check your spam directory if the message is not in your inbox.';
 
-// Email subject
+/**
+ * Email
+ */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Your password request on #host#';
-
-// Email text
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
 Hi #name#
 

@@ -35,6 +35,8 @@ class ImportUser
      */
     public function __invoke(string $username, string $password, string $table): bool
     {
+        @trigger_error('Using the "importUser" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
+
         if ('tl_user' === $table) {
             $session = $this->requestStack->getCurrentRequest()->getSession();
             $session

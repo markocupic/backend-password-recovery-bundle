@@ -17,30 +17,40 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 use Contao\BackendUser;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
+use Contao\Message;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
+use Markocupic\BackendPasswordRecoveryBundle\Util\Crypt;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/backendpasswordrecovery/renewpassword/{token}', name: 'backend_password_recovery_renewpassword', defaults: ['_scope' => 'backend'])]
 class RenewPasswordController extends AbstractController
 {
     public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
 
+    private Adapter $message;
+    private Adapter $system;
+
     public function __construct(
         private readonly ContaoFramework $framework,
         private readonly Connection $connection,
+        private readonly Crypt $crypt,
         private readonly InteractiveBackendLogin $interactiveBackendLogin,
         private readonly Security $security,
-        private readonly LoggerInterface|null $logger = null,
+        private readonly TranslatorInterface $translator,
+        private readonly LoggerInterface|null $contaoInfoLogger = null,
     ) {
+        $this->message = $this->framework->getAdapter(Message::class);
+        $this->system = $this->framework->getAdapter(System::class);
     }
 
     /**
@@ -55,16 +65,19 @@ class RenewPasswordController extends AbstractController
     {
         $this->initializeContaoFramework();
 
-        // Check if token exists in the url -> empty('0') === true
+        // Check if token exists in the url
         if (empty($token)) {
-            return new Response('Access denied due to missing or invalid token.', Response::HTTP_UNAUTHORIZED);
+            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+
+            return $this->redirectToRoute('contao_backend');
         }
 
-        // Get user from token.
-        $result = $this->connection->executeQuery(
-            'SELECT * FROM tl_user WHERE activation = ? AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?) LIMIT 0,1',
+        $valid = false;
+
+        // Retrieve user from token.
+        $rowUser = $this->connection->fetchAssociative(
+            "SELECT * FROM tl_user WHERE activation LIKE '%--$token' AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?) LIMIT 0,1",
             [
-                $token,
                 '',
                 '',
                 time(),
@@ -73,37 +86,52 @@ class RenewPasswordController extends AbstractController
             ]
         );
 
-        $strErrorMsg = 'Backend user not found. Perhaps your token has expired. Please try to restore your password again.';
+        if ($rowUser) {
+            $arrToken = explode('--', $rowUser['activation']);
 
-        if (false === ($arrUsers = $result->fetchAssociative())) {
-            return new Response($strErrorMsg, Response::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS);
+            if (isset($arrToken[1])) {
+                $iv = $arrToken[0]; // initialization vector
+                $encryptedTstamp = $arrToken[1];
+                $intExpiry = (int) $this->crypt->decrypt($encryptedTstamp, $iv);
+
+                if ($intExpiry > time() && $intExpiry > 0) {
+                    $valid = true;
+                }
+            }
         }
 
-        $username = $arrUsers['username'];
+        if (!$valid) {
+            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+
+            return $this->redirectToRoute('contao_backend');
+        }
+
+        $username = $rowUser['username'];
 
         // Interactive login
         if (!$this->interactiveBackendLogin->login($username)) {
-            return new Response($strErrorMsg, Response::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS);
+            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+
+            return $this->redirectToRoute('contao_backend');
         }
 
-        // Get logged in backend user
+        // Get the logged in backend user
         $user = $this->security->getUser();
 
         // Validate
         if (!$user instanceof BackendUser || $user->getUserIdentifier() !== $username) {
-            return new Response($strErrorMsg, Response::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS);
+            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+
+            return $this->redirectToRoute('contao_backend');
         }
 
-        // Trigger Contao post login Hook
+        // Trigger Contao post login Hook < Contao Version 5.0
         if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
             if (!empty($GLOBALS['TL_HOOKS']['postLogin']) && \is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
                 @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
 
-                /** @var System $systemAdapter */
-                $systemAdapter = $this->framework->getAdapter(System::class);
-
                 foreach ($GLOBALS['TL_HOOKS']['postLogin'] as $callback) {
-                    $systemAdapter->importStatic($callback[0])->{$callback[1]}($user);
+                    $this->system->importStatic($callback[0])->{$callback[1]}($user);
                 }
             }
         }
@@ -121,14 +149,10 @@ class RenewPasswordController extends AbstractController
         $this->connection->update('tl_user', $set, ['id' => (int) $user->id]);
 
         // Contao system log entry
-        if ($this->logger) {
-            $strText = sprintf('Backend user "%s" has recovered his password.', $username);
-            $this->logger->log(
-                LogLevel::INFO,
-                $strText,
-                ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
-            );
-        }
+        $this->contaoInfoLogger?->info(
+            sprintf('Backend user "%s" has recovered his password.', $username),
+            ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
+        );
 
         // Redirect to the "contao_backend_password" route.
         return $this->redirectToRoute('contao_backend_password');
