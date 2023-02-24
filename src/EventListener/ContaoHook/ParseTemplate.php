@@ -71,8 +71,6 @@ class ParseTemplate
             if ($session->getFlashBag()->has('loginAttemptHasValidUsernameButInvalidPassword')) {
                 $session->getFlashBag()->get('loginAttemptHasValidUsernameButInvalidPassword');
                 $displayRenewPasswordButton = true;
-            } elseif (str_contains(($objTemplate->messages ?? ''), substr($this->translator->trans('ERR.invalidLogin', [], 'contao_default'), 0, 10)) || str_contains(($objTemplate->messages ?? ''), substr($this->translator->trans('ERR.accountLocked', [], 'contao_default'), 0, 10))) {
-                $displayRenewPasswordButton = true;
             }
 
             if ($displayRenewPasswordButton && $this->scopeMatcher->isBackendRequest($request)) {
