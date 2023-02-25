@@ -12,7 +12,6 @@ jobs:
     cs:
         name: Coding Style
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         steps:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -29,7 +28,6 @@ jobs:
     tests:
         name: PHP ${{ matrix.php }}
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         strategy:
             fail-fast: false
             matrix:
@@ -55,7 +53,6 @@ jobs:
     prefer-lowest-tests:
         name: PHP ${{ matrix.php }} --prefer-lowest
         runs-on: ubuntu-latest
-        if: github.event_name != 'push'
         strategy:
             fail-fast: false
             matrix:
