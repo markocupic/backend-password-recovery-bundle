@@ -40,5 +40,3 @@ Dies lässt sich jedoch auch so anpassen, dass der Button **permanent sichtbar**
 markocupic_backend_password_recovery:
     show_button_on_login_failure_only: false // Default true
 ```
-
-<img src="./docs/print_screen_4.png" width="300">
