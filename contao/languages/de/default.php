@@ -37,7 +37,7 @@ Hallo #name#
 
 Sie haben ein neues Passwort für #host# angefordert.
 
-Bitte öffnen Sie untenstehenden Link um Ihr neues Passwort einzurichten.
+Bitte öffnen Sie untenstehenden Link um Ihr neues Passwort einzurichten. Bitte beachten Sie, dass der Link nur #lifetime# Minuten gültig ist.
 
 #link#
 

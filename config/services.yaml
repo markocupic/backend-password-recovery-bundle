@@ -4,6 +4,8 @@ services:
     autoconfigure: true
     bind:
       Symfony\Component\HttpKernel\UriSigner: '@uri_signer'
+      $tokenLifetime: '%markocupic_backend_password_recovery.token_lifetime%'
+      $showButtonOnLoginFailureOnly: '%markocupic_backend_password_recovery.show_button_on_login_failure_only%'
 
   Markocupic\BackendPasswordRecoveryBundle\:
     resource: ../src/

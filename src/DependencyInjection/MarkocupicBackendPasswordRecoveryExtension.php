@@ -24,13 +24,20 @@ class MarkocupicBackendPasswordRecoveryExtension extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $mergedConfig, ContainerBuilder $container): void
+    public function load(array $configs, ContainerBuilder $container): void
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../../config')
         );
 
         $loader->load('services.yaml');
+
+        // Configuration
+        $container->setParameter('markocupic_backend_password_recovery.token_lifetime', $config['token_lifetime']);
+        $container->setParameter('markocupic_backend_password_recovery.show_button_on_login_failure_only', $config['show_button_on_login_failure_only']);
     }
 }

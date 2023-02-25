@@ -32,8 +32,8 @@ class CheckCredentialsListener
     }
 
     /**
-     * Contao < 5.0 (For Contao 5.x we use the LoginFailureListener)
-     * 
+     * Contao < 5.0 (For Contao 5.x we use the LoginFailureListener).
+     *
      * Do only show the password forgotten button
      * if the user entered the right username but a wrong password.
      */

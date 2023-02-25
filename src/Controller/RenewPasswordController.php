@@ -25,7 +25,6 @@ use Contao\System;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Markocupic\BackendPasswordRecoveryBundle\InteractiveLogin\InteractiveBackendLogin;
-use Markocupic\BackendPasswordRecoveryBundle\Util\Crypt;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,18 +36,19 @@ class RenewPasswordController extends AbstractController
 {
     public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
 
+    private Adapter $contaoCoreBundle;
     private Adapter $message;
     private Adapter $system;
 
     public function __construct(
         private readonly ContaoFramework $framework,
         private readonly Connection $connection,
-        private readonly Crypt $crypt,
         private readonly InteractiveBackendLogin $interactiveBackendLogin,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
         private readonly LoggerInterface|null $contaoInfoLogger = null,
     ) {
+        $this->contaoCoreBundle = $this->framework->getAdapter(ContaoCoreBundle::class);
         $this->message = $this->framework->getAdapter(Message::class);
         $this->system = $this->framework->getAdapter(System::class);
     }
@@ -63,6 +63,8 @@ class RenewPasswordController extends AbstractController
      */
     public function __invoke($token = null): Response
     {
+        $token = base64_decode((string) $token, true);
+
         $this->initializeContaoFramework();
 
         // Check if token exists in the url
@@ -72,12 +74,13 @@ class RenewPasswordController extends AbstractController
             return $this->redirectToRoute('contao_backend');
         }
 
-        $valid = false;
-
+        $isValid = false;
         // Retrieve user from token.
         $rowUser = $this->connection->fetchAssociative(
-            "SELECT * FROM tl_user WHERE activation LIKE '%--$token' AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?) LIMIT 0,1",
+            'SELECT * FROM tl_user WHERE pwResetToken = ? AND pwResetLifetime > ? AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?)',
             [
+                $token,
+                time(),
                 '',
                 '',
                 time(),
@@ -87,21 +90,18 @@ class RenewPasswordController extends AbstractController
         );
 
         if ($rowUser) {
-            $arrToken = explode('--', $rowUser['activation']);
+            $isValid = true;
+            $set = [
+                'pwResetTokenUses' => $rowUser['id'] - 1,
+            ];
 
-            if (isset($arrToken[1])) {
-                $iv = $arrToken[0]; // initialization vector
-                $encryptedTstamp = $arrToken[1];
-                $intExpiry = (int) $this->crypt->decrypt($encryptedTstamp, $iv);
-
-                if ($intExpiry > time() && $intExpiry > 0) {
-                    $valid = true;
-                }
-            }
+            $this->connection->update('tl_user', $set, ['id' => $rowUser['id']]);
         }
 
-        if (!$valid) {
-            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+        if (!$isValid) {
+            if (!$this->hasLoggedInBackendUser()) {
+                $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
+            }
 
             return $this->redirectToRoute('contao_backend');
         }
@@ -126,7 +126,7 @@ class RenewPasswordController extends AbstractController
         }
 
         // Trigger Contao post login Hook < Contao Version 5.0
-        if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
+        if (version_compare($this->contaoCoreBundle->getVersion(), '5.0', 'lt')) {
             if (!empty($GLOBALS['TL_HOOKS']['postLogin']) && \is_array($GLOBALS['TL_HOOKS']['postLogin'])) {
                 @trigger_error('Using the "postLogin" hook has been deprecated and will no longer work in Contao 5.0.', E_USER_DEPRECATED);
 
@@ -136,12 +136,14 @@ class RenewPasswordController extends AbstractController
             }
         }
 
-        // Reset token, loginAttempts, etc.
+        // Reset pwResetToken, pwResetTokenUses, pwResetLifetime, etc.
         // and set pwChange to "1"
-        // this is the way we can use the contao native "password forgot controller".
+        // this is the way we can use the contao native "ContaoBackend" controller.
         $set = [
+            'pwResetToken' => '',
+            'pwResetTokenUses' => 0,
+            'pwResetLifetime' => 0,
             'pwChange' => '1',
-            'activation' => '',
             'loginAttempts' => 0,
             'locked' => 0,
         ];
@@ -156,5 +158,12 @@ class RenewPasswordController extends AbstractController
 
         // Redirect to the "contao_backend_password" route.
         return $this->redirectToRoute('contao_backend_password');
+    }
+
+    private function hasLoggedInBackendUser()
+    {
+        $user = $this->security->getUser();
+
+        return $user instanceof BackendUser;
     }
 }

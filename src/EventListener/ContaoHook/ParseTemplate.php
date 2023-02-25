@@ -40,6 +40,7 @@ class ParseTemplate
         private readonly UriSigner $uriSigner,
         private readonly RouterInterface $router,
         private readonly ScopeMatcher $scopeMatcher,
+        private readonly bool $showButtonOnLoginFailureOnly, // Default true
     ) {
     }
 
@@ -70,6 +71,8 @@ class ParseTemplate
 
             if ($session->getFlashBag()->has('loginAttemptHasValidUsernameButInvalidPassword')) {
                 $session->getFlashBag()->get('loginAttemptHasValidUsernameButInvalidPassword');
+                $displayRenewPasswordButton = true;
+            } elseif (!$this->showButtonOnLoginFailureOnly) {
                 $displayRenewPasswordButton = true;
             }
 

@@ -37,7 +37,7 @@ Hi #name#
 
 You have requested a new password for #host#.
 
-Please open the link below to set up your new password.
+Please open the link below to set up your new password. Please note that the link is only valid for #lifetime# minutes.
 
 #link# 
 

@@ -12,6 +12,10 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
-$GLOBALS['TL_DCA']['tl_user']['fields']['activation'] = [
+$GLOBALS['TL_DCA']['tl_user']['fields']['pwResetToken'] = [
     'sql' => "varchar(256) NOT NULL default ''",
+];
+
+$GLOBALS['TL_DCA']['tl_user']['fields']['pwResetLifetime'] = [
+    'sql' => "int(10) unsigned NOT NULL default 0",
 ];

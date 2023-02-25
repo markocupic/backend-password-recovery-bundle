@@ -42,17 +42,16 @@ class InteractiveBackendLogin
     {
         $this->framework->initialize();
         $session = $this->requestStack->getCurrentRequest()->getSession();
-        $userClass = BackendUser::class;
 
         // Retrieve user by its username
         if (version_compare(ContaoCoreBundle::getVersion(), '5.0', 'lt')) {
             // Contao 4.x
-            $userProvider = new ContaoUserProvider($this->framework, $session, $userClass, $this->logger);
+            $userProvider = new ContaoUserProvider($this->framework, $session, BackendUser::class, $this->logger);
             $user = $userProvider->loadUserByIdentifier($username);
             $authenticatedToken = new UsernamePasswordToken($user, null, static::SECURED_AREA_BACKEND, $user->getRoles());
         } else {
             // Contao 5.x
-            $userProvider = new ContaoUserProvider($this->framework, $userClass);
+            $userProvider = new ContaoUserProvider($this->framework, BackendUser::class);
             $user = $userProvider->loadUserByIdentifier($username);
             $authenticatedToken = new UsernamePasswordToken($user, static::SECURED_AREA_BACKEND, $user->getRoles());
         }
@@ -74,7 +73,6 @@ class InteractiveBackendLogin
             return false;
         }
 
-        /** @var BackendUser $user */
         $user = $authenticatedToken->getUser();
 
         if ($user instanceof BackendUser) {
