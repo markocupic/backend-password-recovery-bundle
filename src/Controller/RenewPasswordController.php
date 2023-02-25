@@ -34,7 +34,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/backendpasswordrecovery/renewpassword/{token}', name: 'backend_password_recovery_renewpassword', defaults: ['_scope' => 'backend'])]
 class RenewPasswordController extends AbstractController
 {
-    public const CONTAO_LOG_CAT = 'BACKEND_PASSWORD_RECOVERY';
+    public const CONTAO_LOG_PW_RECOVERY_SUCCESS = 'BE_PW_RECOVERY_SUCCESS';
 
     private Adapter $contaoCoreBundle;
     private Adapter $message;
@@ -46,7 +46,7 @@ class RenewPasswordController extends AbstractController
         private readonly InteractiveBackendLogin $interactiveBackendLogin,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
-        private readonly LoggerInterface|null $contaoInfoLogger = null,
+        private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
         $this->contaoCoreBundle = $this->framework->getAdapter(ContaoCoreBundle::class);
         $this->message = $this->framework->getAdapter(Message::class);
@@ -75,17 +75,20 @@ class RenewPasswordController extends AbstractController
         }
 
         $isValid = false;
+
+        $now = time();
+
         // Retrieve user from token.
         $rowUser = $this->connection->fetchAssociative(
             'SELECT * FROM tl_user WHERE pwResetToken = ? AND pwResetLifetime > ? AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?)',
             [
                 $token,
-                time(),
+                $now,
                 '',
                 '',
-                time(),
+                $now,
                 '',
-                time(),
+                $now,
             ]
         );
 
@@ -110,15 +113,8 @@ class RenewPasswordController extends AbstractController
             return $this->redirectToRoute('contao_backend');
         }
 
-        // Get the logged in backend user
+        /** @var BackendUser $user */
         $user = $this->security->getUser();
-
-        // Validate
-        if (!$user instanceof BackendUser || $user->getUserIdentifier() !== $username) {
-            $this->message->addError($this->translator->trans('ERR.invalidPwRecoveryToken', [], 'contao_default'));
-
-            return $this->redirectToRoute('contao_backend');
-        }
 
         // Trigger Contao post login Hook < Contao Version 5.0
         if (version_compare($this->contaoCoreBundle->getVersion(), '5.0', 'lt')) {
@@ -132,7 +128,7 @@ class RenewPasswordController extends AbstractController
         }
 
         // Reset pwResetToken, pwResetLifetime, etc.
-        // and set pwChange to "1"
+        // and set pwChange to '1'
         // this is the way we can use the contao native "ContaoBackend" controller.
         $set = [
             'pwResetToken' => '',
@@ -144,13 +140,13 @@ class RenewPasswordController extends AbstractController
 
         $this->connection->update('tl_user', $set, ['id' => (int) $user->id]);
 
-        // Contao system log entry
-        $this->contaoInfoLogger?->info(
+        // Add a log entry to Contao system log.
+        $this->contaoGeneralLogger?->info(
             sprintf('Backend user "%s" has recovered his password.', $username),
-            ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_CAT)]
+            ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_SUCCESS)]
         );
 
-        // Redirect to the "contao_backend_password" route.
+        // Redirect to the 'contao_backend_password' route.
         return $this->redirectToRoute('contao_backend_password');
     }
 

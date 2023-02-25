@@ -22,12 +22,14 @@ use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Framework\Adapter;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Util\LocaleUtil;
 use Contao\Email;
 use Contao\Environment;
 use Contao\Message;
 use Contao\System;
 use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,6 +42,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route(defaults: ['_scope' => 'backend', '_token_check' => true])]
 class PasswordRecoveryLinkRequestController extends AbstractController
 {
+    public const CONTAO_LOG_PW_RECOVERY_REQUEST = 'BE_PW_RECOVERY_REQUEST';
+
     private Adapter $config;
     private Adapter $contaoCoreBundle;
     private Adapter $environment;
@@ -51,12 +55,13 @@ class PasswordRecoveryLinkRequestController extends AbstractController
     public function __construct(
         private readonly ContaoFramework $framework,
         private readonly Connection $connection,
-        private readonly UriSigner $uriSigner,
+        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
         private readonly RequestStack $requestStack,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
-        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
+        private readonly UriSigner $uriSigner,
         private readonly int $tokenLifetime,
+        private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
         $this->backend = $this->framework->getAdapter(Backend::class);
         $this->environment = $this->framework->getAdapter(Environment::class);
@@ -84,10 +89,10 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
         if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && '' !== $request->request->get('usernameOrEmail')) {
             $usernameOrEmail = $request->request->get('usernameOrEmail');
-            $time = time();
+            $now = time();
 
             $rowUser = $this->connection->fetchAssociative(
-                "SELECT * FROM tl_user WHERE (email LIKE ? OR username = ?) AND disable = '' AND (start = '' OR start < $time) AND (stop = '' OR stop > $time)",
+                "SELECT * FROM tl_user WHERE (email LIKE ? OR username = ?) AND disable = '' AND (start = '' OR start < $now) AND (stop = '' OR stop > $now)",
                 [
                     $usernameOrEmail,
                     $usernameOrEmail,
@@ -105,30 +110,36 @@ class PasswordRecoveryLinkRequestController extends AbstractController
 
                 $this->connection->update('tl_user', $set, ['id' => $rowUser['id']]);
 
-                // Generate renew password link
+                // Generate password recovery link
                 $strLink = $this->router->generate(
                     'backend_password_recovery_renewpassword',
                     ['token' => base64_encode($token)],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 );
 
-                // Send email with password recover link to the user
-                $objEmail = new Email();
-                $objEmail->from = $GLOBALS['TL_ADMIN_EMAIL'] ?? $this->config->get('adminEmail');
+                // Send email with password recovery link to the user
+                $email = new Email();
+                $email->from = $GLOBALS['TL_ADMIN_EMAIL'] ?? $this->config->get('adminEmail');
 
-                // Subject
+                // Email: subject
                 $strSubject = str_replace('#host#', $this->environment->get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject', [], 'contao_default'));
-                $objEmail->subject = $strSubject;
+                $email->subject = $strSubject;
 
-                // Text
+                // Email: text
                 $strText = str_replace('#host#', $this->environment->get('base'), $this->translator->trans('MSC.pwRecoveryEmailText', [], 'contao_default'));
                 $strText = str_replace('#link#', $strLink, $strText);
                 $strText = str_replace('#name#', $rowUser['name'], $strText);
                 $strText = str_replace('#lifetime#', (string) floor($this->tokenLifetime / 60), $strText);
-                $objEmail->text = $strText;
+                $email->text = $strText;
 
-                // Send
-                $objEmail->sendTo($rowUser['email']);
+                // Send the email
+                $email->sendTo($rowUser['email']);
+
+                // Add a log entry to Contao system log.
+                $this->contaoGeneralLogger?->info(
+                    sprintf('Password recovery link has been sent to backend user "%s" ID %d.', $rowUser['username'], $rowUser['id']),
+                    ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_REQUEST)]
+                );
 
                 // Everything ok! Sign the uri & redirect to the confirmation page
                 $href = $this->router->generate(
