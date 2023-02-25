@@ -91,11 +91,6 @@ class RenewPasswordController extends AbstractController
 
         if ($rowUser) {
             $isValid = true;
-            $set = [
-                'pwResetTokenUses' => $rowUser['id'] - 1,
-            ];
-
-            $this->connection->update('tl_user', $set, ['id' => $rowUser['id']]);
         }
 
         if (!$isValid) {
@@ -136,12 +131,11 @@ class RenewPasswordController extends AbstractController
             }
         }
 
-        // Reset pwResetToken, pwResetTokenUses, pwResetLifetime, etc.
+        // Reset pwResetToken, pwResetLifetime, etc.
         // and set pwChange to "1"
         // this is the way we can use the contao native "ContaoBackend" controller.
         $set = [
             'pwResetToken' => '',
-            'pwResetTokenUses' => 0,
             'pwResetLifetime' => 0,
             'pwChange' => '1',
             'loginAttempts' => 0,
