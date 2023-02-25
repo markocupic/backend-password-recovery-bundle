@@ -7,8 +7,6 @@ on:
             - '*'
         tags:
             - '*'
-    schedule:
-        - cron: 0 13 * * MON
 
 jobs:
     cs:
