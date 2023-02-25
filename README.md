@@ -27,16 +27,16 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']  = 'Lorem ipsum';
 Um die **Sicherheit** zu erhöhen beträgt die standardmässige **Gültigkeitsdauer** des **Links** 10 Minuten. Diese kann jedoch in der Datei  `config/config.yaml` angepasst werden.
 
 ```
-#config/config.yaml
+# config/config.yaml
 markocupic_backend_password_recovery:
-    token_lifetime: 900 #seconds
+    token_lifetime: 900 # default 600 (10 min)
 ```
 
 Standardmässig wird der "Passwort wiederherstellen Button" **erst nach der Eingabe eines falschen Passwortes** eingeblendet. 
 Dies lässt sich jedoch auch so anpassen, dass der Button **permanent sichtbar** ist.
 
 ```
-#config/config.yaml
+# config/config.yaml
 markocupic_backend_password_recovery:
-    show_button_on_login_failure_only: false // Default true
+    show_button_on_login_failure_only: false # Default true
 ```
