@@ -12,13 +12,13 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
-/**
+/*
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'このユーザー名またはこの電子メール アドレスを持つユーザーは、ユーザー データベースに見つかりませんでした。';
 $GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'パスワードのリセットに失敗しました。 セキュリティ トークンの有効期限が切れている可能性があります。 パスワードの再設定を再度お試しください。';
 
-/**
+/*
  * Miscellaneous
  */
 $GLOBALS['TL_LANG']['MSC']['recoverPassword'] = 'パスワードの回復に進む';
@@ -28,7 +28,7 @@ $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = '電子メールアドレ
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'パスワード忘れ';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'まもなくパスワードを回復の仕方の手順の電子メールが届きます。受信箱に届かない場合は迷惑メールの確認もしてください。';
 
-/**
+/*
  * Email
  */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = '#host#でパスワード要求';
@@ -39,7 +39,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
 
 新しいパスワードを設定するには次のリンクを開いてください。リンクは #lifetime# 分間のみ有効です。
 
-#link# 
+#link#
 
 このメールを依頼した覚えがない場合は、ウェブサイトの管理者に連絡してください。
 

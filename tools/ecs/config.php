@@ -3,10 +3,19 @@
 declare(strict_types=1);
 
 use Symplify\EasyCodingStandard\Config\ECSConfig;
+use Symplify\EasyCodingStandard\ValueObject\Option;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\Whitespace\MethodChainingIndentationFixer;
 
 return static function (ECSConfig $ecsConfig): void {
+
+    if (is_file(__DIR__.'/vendor/contao/easy-coding-standard/config/contao.php')) {
+        //.github/workflows/ci.yaml
+        $ecsConfig->sets([__DIR__.'/vendor/contao/easy-coding-standard/config/contao.php']);
+    } else {
+        // local development
+        $ecsConfig->sets([__DIR__.'/../../../../../vendor/contao/easy-coding-standard/config/contao.php']);
+    }
 
     $services = $ecsConfig->services();
     $services
@@ -25,4 +34,7 @@ return static function (ECSConfig $ecsConfig): void {
 
     $ecsConfig->parallel();
     $ecsConfig->lineEnding("\n");
+
+    $parameters = $ecsConfig->parameters();
+    $parameters->set(Option::CACHE_DIRECTORY, sys_get_temp_dir().'/ecs_default_cache');
 };

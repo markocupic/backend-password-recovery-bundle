@@ -17,5 +17,5 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['pwResetToken'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['pwResetLifetime'] = [
-    'sql' => "int(10) unsigned NOT NULL default 0",
+    'sql' => 'int(10) unsigned NOT NULL default 0',
 ];
