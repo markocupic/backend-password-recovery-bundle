@@ -122,13 +122,13 @@ class Authenticator extends AbstractAuthenticator
 
         // Reset pwResetToken, pwResetLifetime, etc.
         // and set pwChange to '1'
-        // this is the way we can use the "ContaoBackend" controller from the Contao core.
+        // this is the way we can use the "ContaoBackend" controller from the Contao core
         $user->pwResetToken = '';
         $user->pwResetLifetime = 0;
         $user->pwChange = '1';
         $user->save();
 
-        // Add a log entry to Contao system log.
+        // Add a log entry to Contao system log
         $this->contaoGeneralLogger?->info(
             sprintf('Backend user "%s" has recovered his password.', $username),
             ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_SUCCESS)]

@@ -68,8 +68,9 @@ class UserIdentifierFormController extends AbstractController
         $systemAdapter->loadLanguageFile('default');
         $systemAdapter->loadLanguageFile('modules');
 
-        if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && '' !== $request->request->get('usernameOrEmail')) {
-            $usernameOrEmail = $request->request->get('usernameOrEmail');
+        $usernameOrEmail = $request->request->get('usernameOrEmail');
+
+        if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && !empty($usernameOrEmail)) {
             $now = time();
             $t = $userAdapter->getTable();
             $where = ["($t.email LIKE ? OR $t.username = ?) AND $t.disable = '' AND ($t.start = '' OR $t.start < ?) AND ($t.stop = '' OR $t.stop > ?)"];
@@ -109,6 +110,7 @@ class UserIdentifierFormController extends AbstractController
         }
 
         $objTemplate = new BackendTemplate('be_password_recovery_form');
+        $objTemplate->backHref = $this->router->generate('contao_backend');
         $this->addMoreDataToTemplate($objTemplate, $request, $this->framework);
 
         return $objTemplate->getResponse();

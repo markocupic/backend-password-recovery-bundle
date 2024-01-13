@@ -1,0 +1,53 @@
+// Styling for the password recovery link
+.tl_pw_recovery {
+  margin: 0 auto 16px auto;
+  max-width: 350px;
+  text-align: center;
+
+  a.tl_submit.password_recovery_link {
+    background-color: #f46c07;
+    border: transparent;
+    color: #fff;
+    margin-top: 15px;
+    display: block;
+    padding: 12px 13px;
+    height: auto;
+
+    &:hover {
+      background-color: #0f1c26;
+    }
+  }
+}
+
+.backend-password-recovery {
+  > p {
+    border-top: 2px solid #ffffff;
+    padding-top: 20px;
+  }
+
+  .tl_require_password_link_form .formbody {
+    padding-bottom: 45px;
+  }
+
+  .widget {
+    padding-top: 10px;
+
+    .tl_text {
+      margin-top: 10px;
+    }
+  }
+
+  .widget label, .main-inner p {
+    line-height: 1.5;
+  }
+
+  .main-inner {
+    padding: 45px;
+  }
+
+  a.tl_submit.password_recovery_go_back_link {
+    margin: 0 0 0 4px;
+    float: initial;
+    vertical-align: initial;
+  }
+}
