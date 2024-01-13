@@ -52,7 +52,7 @@ class SendEmailConfirmController extends AbstractController
         $systemAdapter->loadLanguageFile('modules');
 
         $objTemplate = new BackendTemplate('be_password_recovery_confirm');
-        $objTemplate->backHref = $this->router->generate('contao_backend_login');
+        $objTemplate->backHref = $this->router->generate('contao_backend');
         $this->addMoreDataToTemplate($objTemplate, $request, $this->framework);
 
         return $objTemplate->getResponse();

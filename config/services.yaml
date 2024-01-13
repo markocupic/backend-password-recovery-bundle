@@ -4,7 +4,7 @@ services:
     autoconfigure: true
     bind:
       $tokenLifetime: '%markocupic_backend_password_recovery.token_lifetime%'
-      $showButtonOnLoginFailureOnly: '%markocupic_backend_password_recovery.show_button_on_login_failure_only%'
+      $showButtonOnLoginFailureOnly: '%markocupic_backend_password_recovery.show_password_recovery_link_on_login_failure_only%'
 
   Markocupic\BackendPasswordRecoveryBundle\:
     resource: ../src/

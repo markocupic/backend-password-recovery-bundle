@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
                 ->integerNode('token_lifetime')
                     ->defaultValue(600)
                 ->end()
-                ->booleanNode('show_button_on_login_failure_only')
+                ->booleanNode('show_password_recovery_link_on_login_failure_only')
                     ->defaultTrue()
                 ->end()
             ->end()

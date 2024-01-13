@@ -1,7 +1,7 @@
 <img src="./docs/logo.png" width="300">
 
 # Contao Backend Password Recovery Bundle
-Senden Sie Benutzern niemals Passwörter über E-Mail. 
+Senden Sie Benutzern niemals Passwörter über E-Mail.
 
 Dieses Plugin blendet **nach** falscher Eingabe des **Backend User Passwortes** einen "Passwort-Wiederherstellen-Button" ein. Durch Eingabe des Benutzernamens oder der E-Mail-Adresse wird dem User **eine E-Mail mit einem Link** zugesandt. Damit kann der Backend User sein Passwort neu erstellen.
 
@@ -32,11 +32,11 @@ markocupic_backend_password_recovery:
     token_lifetime: 900 # default 600 (10 min)
 ```
 
-Standardmässig wird der "Passwort wiederherstellen Button" **erst nach der Eingabe eines falschen Passwortes** eingeblendet. 
+Standardmässig wird der "Passwort wiederherstellen Button" **erst nach der Eingabe eines falschen Passwortes** eingeblendet.
 Dies lässt sich jedoch auch so anpassen, dass der Button **permanent sichtbar** ist.
 
 ```
 # config/config.yaml
 markocupic_backend_password_recovery:
-    show_button_on_login_failure_only: false # Default true
+    show_password_recovery_link_on_login_failure_only: false # Default true
 ```

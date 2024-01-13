@@ -38,6 +38,6 @@ class MarkocupicBackendPasswordRecoveryExtension extends Extension
 
         // Configuration
         $container->setParameter('markocupic_backend_password_recovery.token_lifetime', $config['token_lifetime']);
-        $container->setParameter('markocupic_backend_password_recovery.show_button_on_login_failure_only', $config['show_button_on_login_failure_only']);
+        $container->setParameter('markocupic_backend_password_recovery.show_password_recovery_link_on_login_failure_only', $config['show_password_recovery_link_on_login_failure_only']);
     }
 }

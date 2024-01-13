@@ -24,7 +24,6 @@ use Contao\Environment;
 use Contao\Message;
 use Contao\System;
 use Contao\UserModel;
-use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +44,6 @@ class UserIdentifierFormController extends AbstractController
 
     public function __construct(
         private readonly ContaoFramework $framework,
-        private readonly Connection $connection,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
         private readonly UriSigner $uriSigner,
@@ -92,9 +90,9 @@ class UserIdentifierFormController extends AbstractController
                 // Redirect back to the login form on error
                 if (!$this->sendEmail($user, $strLink)) {
                     $messageAdapter->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
-                    $href = $this->router->generate('contao_backend_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+                    $href = $this->router->generate('contao_backend', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-                    return $this->redirect($this->uriSigner->sign($href));
+                    return $this->redirect($href);
                 }
 
                 // Add a log entry to Contao system log
@@ -116,7 +114,7 @@ class UserIdentifierFormController extends AbstractController
         return $objTemplate->getResponse();
     }
 
-    protected function sendEmail(UserModel $user, string $strLink): bool
+    private function sendEmail(UserModel $user, string $strLink): bool
     {
         try {
             // Adapters
@@ -134,7 +132,9 @@ class UserIdentifierFormController extends AbstractController
             // Email: text
             $strText = str_replace('#host#', $environmentAdapter->get('base'), $this->translator->trans('MSC.pwRecoveryEmailText', [], 'contao_default'));
             $strText = str_replace('#link#', $strLink, $strText);
+            $strText = str_replace('#lifetime#', (string) floor($this->tokenLifetime / 60), $strText);
 
+            // Add user props
             foreach ($user->row() as $k => $v) {
                 $skip = [
                     'password',
@@ -151,14 +151,13 @@ class UserIdentifierFormController extends AbstractController
                 }
             }
 
-            $strText = str_replace('#lifetime#', (string) floor($this->tokenLifetime / 60), $strText);
             $email->text = $strText;
 
             // Send the email
             $emailSuccess = $email->sendTo($user->email);
 
             if (!$emailSuccess) {
-                throw new Exception('Something went wrong while trying to send the password recovery link.');
+                throw new \Exception('Something went wrong while trying to send the password recovery link.');
             }
 
             return true;
