@@ -44,7 +44,7 @@
         "allow-plugins": {
             "contao-components/installer": false,
             "contao/manager-plugin": false,
-            "php-http/discovery": false,
+            "php-http/discovery": false
         }
     },
     "require-dev": {
