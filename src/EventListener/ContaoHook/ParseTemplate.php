@@ -17,7 +17,7 @@ namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\ContaoHook;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
-use Markocupic\BackendPasswordRecoveryBundle\Controller\PasswordRecoveryUserIdentifierFormController;
+use Markocupic\BackendPasswordRecoveryBundle\Controller\UserIdentifierFormController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\UriSigner;
@@ -46,8 +46,6 @@ class ParseTemplate
     }
 
     /**
-     * @param Template $objTemplate
-     * @return void
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -80,7 +78,7 @@ class ParseTemplate
 
                 $href = sprintf(
                     $this->router->generate(
-                        PasswordRecoveryUserIdentifierFormController::ROUTE,
+                        UserIdentifierFormController::ROUTE,
                         [],
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ).'?_locale=%s',

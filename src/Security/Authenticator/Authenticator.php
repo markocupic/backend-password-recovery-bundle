@@ -21,7 +21,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Message;
 use Contao\UserModel;
 use Doctrine\DBAL\Connection;
-use Markocupic\BackendPasswordRecoveryBundle\Controller\RenewPasswordController;
+use Markocupic\BackendPasswordRecoveryBundle\Controller\TokenAuthenticationController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -60,7 +60,7 @@ class Authenticator extends AbstractAuthenticator
             return false;
         }
 
-        if (RenewPasswordController::ROUTE !== $request->attributes->get('_route')) {
+        if (TokenAuthenticationController::ROUTE !== $request->attributes->get('_route')) {
             return false;
         }
 

@@ -36,10 +36,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/_backend_password_recovery/require_password_recovery_link/form', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
-class PasswordRecoveryUserIdentifierFormController extends AbstractController
+#[Route('/_backend_password_recovery/form', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
+class UserIdentifierFormController extends AbstractController
 {
-    public const ROUTE = 'backend_password_recovery_require_password_recovery_link_form';
+    public const ROUTE = 'backend_password_recovery.user_identifier_form';
     public const CONTAO_LOG_PW_RECOVERY_REQUEST = 'BE_PW_RECOVERY_REQUEST';
 
     public function __construct(
@@ -94,7 +94,7 @@ class PasswordRecoveryUserIdentifierFormController extends AbstractController
 
                 // Generate password recovery link
                 $strLink = $this->router->generate(
-                    RenewPasswordController::ROUTE,
+                    TokenAuthenticationController::ROUTE,
                     ['_token' => base64_encode($token)],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 );
@@ -126,7 +126,7 @@ class PasswordRecoveryUserIdentifierFormController extends AbstractController
 
             // Redirect to the confirmation page
             $href = $this->router->generate(
-                PasswordRecoveryLinkRequestController::ROUTE,
+                SendEmailConfirmController::ROUTE,
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );

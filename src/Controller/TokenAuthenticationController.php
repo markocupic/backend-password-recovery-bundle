@@ -22,10 +22,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-#[Route('/_backend_password_recovery/renew_password/{_token}', name: self::ROUTE, defaults: ['_scope' => 'backend'])]
-class RenewPasswordController extends AbstractController
+#[Route('/_backend_password_recovery/token_authentication/{_token}', name: self::ROUTE, defaults: ['_scope' => 'backend'])]
+class TokenAuthenticationController extends AbstractController
 {
-    public const ROUTE = 'backend_password_recovery_renew_password';
+    public const ROUTE = 'backend_password_recovery.token_authentication';
 
     public function __construct(private readonly RouterInterface $router)
     {

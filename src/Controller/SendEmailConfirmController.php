@@ -29,10 +29,10 @@ use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
-#[Route('/_backend_password_recovery/require_password_recovery_link/confirm', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
-class PasswordRecoveryLinkRequestController extends AbstractController
+#[Route('/_backend_password_recovery/confirm', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
+class SendEmailConfirmController extends AbstractController
 {
-    public const ROUTE = 'backend_password_recovery_require_password_recovery_link_confirm';
+    public const ROUTE = 'backend_password_recovery.send_email_confirm';
 
     public function __construct(
         private readonly ContaoFramework $framework,
