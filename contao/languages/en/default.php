@@ -15,8 +15,8 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'No user with this username or this e-mail address was found in the user database.';
-$GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'Password reset failed. The security token may have expired. Please try to reset the password again.';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Password reset failed. user not found.';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Something went wrong while trying to recover the password.';
 
 /*
  * Miscellaneous
@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Password recovery';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'Email or your username';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Please enter your email address or username to receive an email message with the password recovery link.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'forgot password';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'You will shortly receive an email with instructions on how to restore your password. Also check your spam directory if the message is not in your inbox.';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'If a user with the user name/e-mail address you entered exists, you will shortly receive an e-mail with instructions on how to recover your password. Please also check your spam folder if the message is not in your inbox.';
 
 /*
  * Email

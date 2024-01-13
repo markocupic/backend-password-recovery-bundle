@@ -18,13 +18,16 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Contao\ManagerPlugin\Config\ContainerBuilder;
+use Contao\ManagerPlugin\Config\ExtensionPluginInterface;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
 use Markocupic\BackendPasswordRecoveryBundle\MarkocupicBackendPasswordRecoveryBundle;
+use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Authenticator;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouteCollection;
 
-class Plugin implements BundlePluginInterface, RoutingPluginInterface
+class Plugin implements BundlePluginInterface, RoutingPluginInterface, ExtensionPluginInterface
 {
     /**
      * {@inheritdoc}
@@ -46,5 +49,29 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
             ->resolve(__DIR__.'/../../config/routing.yaml')
             ->load(__DIR__.'/../../config/routing.yaml')
         ;
+    }
+
+    /**
+     * Register Contao backend authenticator
+     * @param $extensionName
+     * @param array $extensionConfigs
+     * @param ContainerBuilder $container
+     * @return array|\mixed[][]
+     */
+    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container): array
+    {
+        if ('security' !== $extensionName) {
+            return $extensionConfigs;
+        }
+
+        foreach ($extensionConfigs as &$extensionConfig) {
+            if (isset($extensionConfig['firewalls'], $extensionConfig['firewalls']['contao_backend'])) {
+                $extensionConfig['firewalls']['contao_backend']['custom_authenticators'][] = Authenticator::class;
+            }
+        }
+
+        $extensionConfigs[] = ['enable_authenticator_manager' => true];
+
+        return $extensionConfigs;
     }
 }

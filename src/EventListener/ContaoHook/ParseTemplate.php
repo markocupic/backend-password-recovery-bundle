@@ -17,6 +17,7 @@ namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\ContaoHook;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
+use Markocupic\BackendPasswordRecoveryBundle\Controller\PasswordRecoveryUserIdentifierFormController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\UriSigner;
@@ -40,11 +41,13 @@ class ParseTemplate
         private readonly UriSigner $uriSigner,
         private readonly RouterInterface $router,
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly bool $showButtonOnLoginFailureOnly, // Default true
+        private readonly bool $showButtonOnLoginFailureOnly,
     ) {
     }
 
     /**
+     * @param Template $objTemplate
+     * @return void
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -63,26 +66,21 @@ class ParseTemplate
             $session = $request->getSession();
             $session->start();
 
-            /*
-             * Do only show the password forgotten button
-             * if the user entered the right username but a wrong password.
-             */
-            $displayRenewPasswordButton = false;
+            $displayRenewPasswordLink = false;
 
-            if ($session->getFlashBag()->has('loginAttemptHasValidUsernameButInvalidPassword')) {
-                $session->getFlashBag()->get('loginAttemptHasValidUsernameButInvalidPassword');
-                $displayRenewPasswordButton = true;
+            if (!empty($session->getFlashBag()->get('_show_password_recovery_link'))) {
+                $displayRenewPasswordLink = true;
             } elseif (!$this->showButtonOnLoginFailureOnly) {
-                $displayRenewPasswordButton = true;
+                $displayRenewPasswordLink = true;
             }
 
-            if ($displayRenewPasswordButton && $this->scopeMatcher->isBackendRequest($request)) {
+            if ($displayRenewPasswordLink && $this->scopeMatcher->isBackendRequest($request)) {
                 // Generate password recover link
                 $locale = $request->getLocale();
 
                 $href = sprintf(
                     $this->router->generate(
-                        'backend_password_recovery_requirepasswordrecoverylink_form',
+                        PasswordRecoveryUserIdentifierFormController::ROUTE,
                         [],
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ).'?_locale=%s',
@@ -97,7 +95,7 @@ class ParseTemplate
 
                 // Show reset password link if login has failed
                 $objTemplate->messages .= $this->twig->render(
-                    '@MarkocupicBackendPasswordRecovery/password_recovery_button.html.twig',
+                    '@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig',
                     [
                         'href' => $signedUri,
                         'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),

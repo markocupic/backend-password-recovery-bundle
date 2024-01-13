@@ -15,8 +15,8 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'In der Benutzer-Datenbank wurde kein Benutzer mit diesem Benutzernamen oder dieser E-Mail-Adresse gefunden.';
-$GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'Passwortrückstellung fehlgeschlagen. Möglicherweise ist das Sicherheitstoken abgelaufen. Probieren Sie bitte das Passwort erneut zurückzusetzen.';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Passwortrückstellung fehlgeschlagen. Benutzer nicht gefunden.';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Während dem Versuch das Passwort wiederherzustellen, ist etwas schiefgelaufen.';
 
 /*
  * Miscellaneous
@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Passwort wiederherstellen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzernamen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein, um eine E-Mail-Nachricht mit dem Wiederherstellungslink zu erhalten.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'Passwort vergessen';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Sie erhalten nun in Kürze eine E-Mail mit Hinweisen, wie Sie Ihr Passwort wiederherstellen können. Prüfen Sie auch Ihr Spamverzeichnis, falls sich die Nachricht nicht in Ihrem Posteingang befinden sollte.';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Falls ein Benutzer mit dem von Ihnen eingegebenen Benutzernamen/E-Mail-Adresse existiert, erhalten Sie in Kürze eine E-Mail mit Hinweisen, wie Sie Ihr Passwort wiederherstellen können. Prüfen Sie auch Ihr Spamverzeichnis, falls sich die Nachricht nicht in Ihrem Posteingang befinden sollte.';
 
 /*
  * Email

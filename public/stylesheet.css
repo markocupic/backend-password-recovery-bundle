@@ -8,7 +8,7 @@
     padding-top: 20px;
 }
 
-.tl_pw_recovery a.tl_submit.password_recovery_button {
+.tl_pw_recovery a.tl_submit.password_recovery_link {
     background-color: #f46c07;
     border: transparent;
     color: #fff;
@@ -18,7 +18,7 @@
     height: auto;
 }
 
-.tl_pw_recovery a.tl_submit.password_recovery_button:hover {
+.tl_pw_recovery a.tl_submit.password_recovery_link:hover {
     background-color: #0f1c26;
 }
 

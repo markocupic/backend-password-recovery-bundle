@@ -38,15 +38,11 @@ class LoginFailureSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $user = $passport->getUser();
-
-        if ($user instanceof BackendUser) {
-            $session = $event->getRequest()->getSession();
-            $session->start();
-            $session
-                ->getFlashBag()
-                ->set('loginAttemptHasValidUsernameButInvalidPassword', $user->getUserIdentifier())
-         ;
-        }
+        $session = $event->getRequest()->getSession();
+        $session->start();
+        $session
+            ->getFlashBag()
+            ->set('_show_password_recovery_link', 'true')
+        ;
     }
 }

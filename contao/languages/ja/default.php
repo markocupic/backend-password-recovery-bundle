@@ -15,8 +15,8 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['pwRecoveryFailed'] = 'このユーザー名またはこの電子メール アドレスを持つユーザーは、ユーザー データベースに見つかりませんでした。';
-$GLOBALS['TL_LANG']['ERR']['invalidPwRecoveryToken'] = 'パスワードのリセットに失敗しました。 セキュリティ トークンの有効期限が切れている可能性があります。 パスワードの再設定を再度お試しください。';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'パスワードのリセットに失敗しました。';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'パスワードを回復しようとして、何かがおかしくなった。';
 
 /*
  * Miscellaneous
@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'パスワードの回復';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = '電子メールまたはユーザー名';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = '電子メールアドレスまたはユーザー名を入力するとパスワードの回復のリンクを含んだ電子メールのメッセージを受信できます。';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'パスワード忘れ';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'まもなくパスワードを回復の仕方の手順の電子メールが届きます。受信箱に届かない場合は迷惑メールの確認もしてください。';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = '入力されたユーザー名/メールアドレスのユーザーが存在する場合、まもなくパスワードの復旧方法を記載したメールが届きます。受信トレイにメッセージがない場合は、迷惑メールフォルダもご確認ください。';
 
 /*
  * Email
