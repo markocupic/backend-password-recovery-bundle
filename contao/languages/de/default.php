@@ -16,7 +16,7 @@ declare(strict_types=1);
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Passwortrückstellung fehlgeschlagen. Benutzer nicht gefunden.';
-$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Während dem Versuch das Passwort wiederherzustellen, ist etwas schiefgelaufen.';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Während des Versuchs das Passwort wiederherzustellen, ist es zu einem unerwarteten Fehler gekommen.';
 
 /*
  * Miscellaneous
@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Falls ein Benutz
  */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Ihre Passwort-Anforderung für #host#';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
-Hallo #name#
+Hallo #user_name#
 
 Sie haben ein neues Passwort für #host# angefordert.
 

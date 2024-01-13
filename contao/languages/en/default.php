@@ -16,7 +16,7 @@ declare(strict_types=1);
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Password reset failed. user not found.';
-$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Something went wrong while trying to recover the password.';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'An unexpected error occurred while trying to recover the password.';
 
 /*
  * Miscellaneous
@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'If a user with t
  */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Your password request on #host#';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
-Hi #name#
+Hi #user_name#
 
 You have requested a new password for #host#.
 

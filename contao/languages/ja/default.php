@@ -16,7 +16,7 @@ declare(strict_types=1);
  * Errors
  */
 $GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'パスワードのリセットに失敗しました。';
-$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'パスワードを回復しようとして、何かがおかしくなった。';
+$GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'パスワードを回復しようとして予期しないエラーが発生しました。';
 
 /*
  * Miscellaneous
@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = '入力された�
  */
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = '#host#でパスワード要求';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText'] = '
-こんにちは#name#さん。
+こんにちは#user_name#さん。
 
 #host#で新しいパスワード設定の依頼がありました。
 

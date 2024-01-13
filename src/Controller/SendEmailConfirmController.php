@@ -14,14 +14,9 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
-use Contao\Backend;
 use Contao\BackendTemplate;
-use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\CoreBundle\Util\LocaleUtil;
-use Contao\Environment;
-use Contao\Message;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +27,8 @@ use Symfony\Component\Routing\RouterInterface;
 #[Route('/_backend_password_recovery/confirm', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
 class SendEmailConfirmController extends AbstractController
 {
+    use BackendTemplateTrait;
+
     public const ROUTE = 'backend_password_recovery.send_email_confirm';
 
     public function __construct(
@@ -45,36 +42,19 @@ class SendEmailConfirmController extends AbstractController
     {
         $this->initializeContaoFramework();
 
-        $system = $this->framework->getAdapter(System::class);
+        $systemAdapter = $this->framework->getAdapter(System::class);
 
-        if (!$this->uriSigner->check($request->getUri())) {
+        if (!$this->uriSigner->checkRequest($request)) {
             return new Response('Bad request. Access denied!', Response::HTTP_FORBIDDEN);
         }
 
-        $system->loadLanguageFile('default');
-        $system->loadLanguageFile('modules');
+        $systemAdapter->loadLanguageFile('default');
+        $systemAdapter->loadLanguageFile('modules');
 
-        $objTemplate = new BackendTemplate('be_password_recovery_link_request');
-        $objTemplate->showConfirmation = true;
+        $objTemplate = new BackendTemplate('be_password_recovery_confirm');
         $objTemplate->backHref = $this->router->generate('contao_backend_login');
-        $this->addMoreDataToTemplate($objTemplate, $request);
+        $this->addMoreDataToTemplate($objTemplate, $request, $this->framework);
 
         return $objTemplate->getResponse();
-    }
-
-    private function addMoreDataToTemplate(BackendTemplate $objTemplate, Request $request): void
-    {
-        $environment = $this->framework->getAdapter(Environment::class);
-        $config = $this->framework->getAdapter(Config::class);
-        $message = $this->framework->getAdapter(Message::class);
-        $localUtil = $this->framework->getAdapter(LocaleUtil::class);
-        $backend = $this->framework->getAdapter(Backend::class);
-
-        $objTemplate->theme = $backend->getTheme();
-        $objTemplate->messages = $message->generate();
-        $objTemplate->base = $environment->get('base');
-        $objTemplate->language = $localUtil->formatAsLanguageTag($request->getLocale());
-        $objTemplate->host = $backend->getDecodedHostname();
-        $objTemplate->charset = $config->get('characterSet');
     }
 }

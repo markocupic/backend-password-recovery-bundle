@@ -91,7 +91,7 @@ class Authenticator extends AbstractAuthenticator
             $t = $userAdapter->getTable();
             $where = ["$t.pwResetToken = ? AND $t.pwResetLifetime > ? AND $t.disable = '' AND ($t.start = '' OR $t.start < ?) AND ($t.stop = '' OR $t.stop > ?)"];
 
-            $user = $userAdapter->findBy($where, [$token, $now, $now, $now]);
+            $user = $userAdapter->findOneBy($where, [$token, $now, $now, $now]);
 
             if (null === $user) {
                 throw new UserNotFoundAuthenticationException('Could not retrieve Contao user from password recovery token.');
@@ -118,7 +118,7 @@ class Authenticator extends AbstractAuthenticator
         $t = $userAdapter->getTable();
         $where = ["$t.username = ?"];
 
-        $user = $userAdapter->findBy($where, [$username]);
+        $user = $userAdapter->findOneBy($where, [$username]);
 
         // Reset pwResetToken, pwResetLifetime, etc.
         // and set pwChange to '1'

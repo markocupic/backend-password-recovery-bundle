@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\EventSubscriber;
 
-use Contao\BackendUser;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 

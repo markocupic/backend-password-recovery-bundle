@@ -52,11 +52,11 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface, Extension
     }
 
     /**
-     * Register Contao backend authenticator
+     * Register Contao backend authenticator.
+     *
      * @param $extensionName
-     * @param array $extensionConfigs
-     * @param ContainerBuilder $container
-     * @return array|\mixed[][]
+     *
+     * @return array<array<\mixed>>
      */
     public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container): array
     {
