@@ -20,7 +20,6 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Message;
 use Contao\UserModel;
-use Doctrine\DBAL\Connection;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\TokenAuthenticationController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
@@ -44,7 +43,6 @@ class Authenticator extends AbstractAuthenticator
     public const CONTAO_LOG_PW_RECOVERY_FAILURE = 'BE_PW_RECOVERY_FAILURE';
 
     public function __construct(
-        private readonly Connection $connection,
         private readonly ContaoFramework $framework,
         private readonly RouterInterface $router,
         private readonly ScopeMatcher $scopeMatcher,
@@ -82,58 +80,45 @@ class Authenticator extends AbstractAuthenticator
     {
         $this->framework->initialize();
 
-        // Get the message adapter
-        $message = $this->framework->getAdapter(Message::class);
+        $messageAdapter = $this->framework->getAdapter(Message::class);
+        $userAdapter = $this->framework->getAdapter(UserModel::class);
 
         $token = $request->attributes->get('_token');
 
         try {
             $token = base64_decode((string) $token, true);
-
             $now = time();
+            $t = $userAdapter->getTable();
+            $where = ["$t.pwResetToken = ? AND $t.pwResetLifetime > ? AND $t.disable = '' AND ($t.start = '' OR $t.start < ?) AND ($t.stop = '' OR $t.stop > ?)"];
 
-            // Retrieve user from token.
-            $row = $this->connection->fetchAssociative(
-                'SELECT * FROM tl_user WHERE pwResetToken = ? AND pwResetLifetime > ? AND disable = ? AND (start = ? OR start < ?) AND (stop = ? OR stop > ?)',
-                [
-                    $token,
-                    $now,
-                    '',
-                    '',
-                    $now,
-                    '',
-                    $now,
-                ]
-            );
+            $user = $userAdapter->findBy($where, [$token, $now, $now, $now]);
 
-            if (false === $row) {
+            if (null === $user) {
                 throw new UserNotFoundAuthenticationException('Could not retrieve Contao user from password recovery token.');
             }
-
-            $username = $row['username'];
         } catch (UserNotFoundAuthenticationException $e) {
-            $message->addError($this->translator->trans('ERR.'.$e->getMessageKey(), [], 'contao_default'));
+            $messageAdapter->addError($this->translator->trans('ERR.'.$e->getMessageKey(), [], 'contao_default'));
             $log = sprintf('Could not retrieve Contao user from token "%s".', $token);
 
             throw new AuthenticationException($log);
         } catch (\Exception $e) {
-            $message->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
+            $messageAdapter->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
             $log = 'Something went wrong while trying to recover the password.';
 
             throw new AuthenticationException($log);
         }
 
-        return new SelfValidatingPassport(new UserBadge($username));
+        return new SelfValidatingPassport(new UserBadge($user->username));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $firewallName): Response|null
     {
         $username = $token->getUserIdentifier();
+        $userAdapter = $this->framework->getAdapter(UserModel::class);
+        $t = $userAdapter->getTable();
+        $where = ["$t.username = ?"];
 
-        $adapter = $this->framework->getAdapter(UserModel::class);
-        $t = $adapter->getTable();
-
-        $user = $adapter->findBy([$t.'.username = ?'], [$username]);
+        $user = $userAdapter->findBy($where, [$username]);
 
         // Reset pwResetToken, pwResetLifetime, etc.
         // and set pwChange to '1'
