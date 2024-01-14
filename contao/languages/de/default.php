@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Passwort wiederherstellen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'E-Mail oder Benutzernamen';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Bitte geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein, um eine E-Mail-Nachricht mit dem Wiederherstellungslink zu erhalten.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'Passwort vergessen';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Falls ein Benutzer mit dem von Ihnen eingegebenen Benutzernamen/E-Mail-Adresse existiert, erhalten Sie in Kürze eine E-Mail mit Hinweisen, wie Sie Ihr Passwort wiederherstellen können. Prüfen Sie auch Ihr Spamverzeichnis, falls sich die Nachricht nicht in Ihrem Posteingang befinden sollte.';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'Falls ein Benutzer mit den von Ihnen eingegebenen Benutzerangaben existiert, erhalten Sie in Kürze eine E-Mail mit Hinweisen, wie Sie Ihr Passwort wiederherstellen können. Prüfen Sie auch Ihr Spamverzeichnis, sollte sich die Nachricht nicht in Ihrem Posteingang befinden.';
 
 /*
  * Email

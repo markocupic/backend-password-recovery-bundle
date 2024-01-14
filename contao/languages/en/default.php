@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryHeadline'] = 'Password recovery';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailPlaceholder'] = 'Email or your username';
 $GLOBALS['TL_LANG']['MSC']['usernameOrEmailExplain'] = 'Please enter your email address or username to receive an email message with the password recovery link.';
 $GLOBALS['TL_LANG']['MSC']['forgotPassword'] = 'forgot password';
-$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'If a user with the user name/e-mail address you entered exists, you will shortly receive an e-mail with instructions on how to recover your password. Please also check your spam folder if the message is not in your inbox.';
+$GLOBALS['TL_LANG']['MSC']['pwRecoveryLinkSuccessfullySent'] = 'If a user with the user details you entered exists, you will shortly receive an e-mail with instructions on how to recover your password. Please also check your spam folder if the message is not in your inbox.';
 
 /*
  * Email
