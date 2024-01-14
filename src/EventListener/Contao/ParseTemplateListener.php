@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @link https://github.com/markocupic/backend-password-recovery-bundle
  */
 
-namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\ContaoHook;
+namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\Contao;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
@@ -29,8 +29,8 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-#[AsHook(ParseTemplate::HOOK)]
-class ParseTemplate
+#[AsHook(ParseTemplateListener::HOOK)]
+class ParseTemplateListener
 {
     public const HOOK = 'parseTemplate';
 
@@ -50,9 +50,9 @@ class ParseTemplate
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function __invoke(Template $objTemplate): void
+    public function __invoke(Template $template): void
     {
-        if (str_starts_with($objTemplate->getName(), 'be_login')) {
+        if (str_starts_with($template->getName(), 'be_login')) {
             /** @var Request $request */
             $request = $this->requestStack->getCurrentRequest();
 
@@ -64,38 +64,23 @@ class ParseTemplate
             $session = $request->getSession();
             $session->start();
 
-            $displayRenewPasswordLink = false;
+            $displayPasswordResetLink = false;
 
             if (!empty($session->getFlashBag()->get('_show_password_recovery_link'))) {
-                $displayRenewPasswordLink = true;
+                $displayPasswordResetLink = true;
             } elseif (!$this->showButtonOnLoginFailureOnly) {
-                $displayRenewPasswordLink = true;
+                $displayPasswordResetLink = true;
             }
 
-            if ($displayRenewPasswordLink && $this->scopeMatcher->isBackendRequest($request)) {
-                // Generate password recover link
+            if ($displayPasswordResetLink && $this->scopeMatcher->isBackendRequest($request)) {
                 $locale = $request->getLocale();
 
-                $href = sprintf(
-                    $this->router->generate(
-                        UserIdentifierFormController::ROUTE,
-                        [],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ).'?_locale=%s',
-                    $locale
-                );
-
-                $signedUri = $this->uriSigner->sign($href);
-                $objTemplate->recoverPasswordLink = $signedUri;
-
-                // Forgot password label
-                $objTemplate->forgotPassword = $this->translator->trans('MSC.forgotPassword', [], 'contao_default');
-
-                // Show reset password link if login has failed
-                $objTemplate->messages .= $this->twig->render(
+                $href = $this->router->generate(UserIdentifierFormController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
+                $href .= !empty($locale) ? '?_locale='.$locale : '';
+                $template->messages .= $this->twig->render(
                     '@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig',
                     [
-                        'href' => $signedUri,
+                        'href' => $this->uriSigner->sign($href),
                         'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),
                     ]
                 );
