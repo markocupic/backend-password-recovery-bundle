@@ -20,7 +20,7 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Message;
 use Contao\UserModel;
-use Markocupic\BackendPasswordRecoveryBundle\Controller\TokenAuthenticationController;
+use Markocupic\BackendPasswordRecoveryBundle\Controller\ResetVerifyController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -58,7 +58,7 @@ class Authenticator extends AbstractAuthenticator
             return false;
         }
 
-        if (TokenAuthenticationController::ROUTE !== $request->attributes->get('_route')) {
+        if (ResetVerifyController::ROUTE !== $request->attributes->get('_route')) {
             return false;
         }
 

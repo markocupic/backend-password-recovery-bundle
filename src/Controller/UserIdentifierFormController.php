@@ -86,7 +86,7 @@ class UserIdentifierFormController extends AbstractController
                 $user->save();
 
                 // Generate password recovery link
-                $strLink = $this->router->generate(TokenAuthenticationController::ROUTE, ['_token' => base64_encode($token)], UrlGeneratorInterface::ABSOLUTE_URL);
+                $strLink = $this->router->generate(ResetVerifyController::ROUTE, ['_token' => base64_encode($token)], UrlGeneratorInterface::ABSOLUTE_URL);
 
                 // Redirect back to the login form on error
                 if (!$this->sendEmail($user, $strLink)) {

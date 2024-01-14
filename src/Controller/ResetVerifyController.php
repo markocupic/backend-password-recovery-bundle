@@ -20,19 +20,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
-#[Route('/_backend_password_recovery/token_authentication/{_token}', name: self::ROUTE, defaults: ['_scope' => 'backend'])]
-class TokenAuthenticationController extends AbstractController
+#[Route('/_backend_password_recovery/reset_verify/{_token}', name: self::ROUTE, defaults: ['_scope' => 'backend'])]
+class ResetVerifyController extends AbstractController
 {
-    public const ROUTE = 'backend_password_recovery.token_authentication';
-
-    public function __construct(private readonly RouterInterface $router)
-    {
-    }
+    public const ROUTE = 'backend_password_recovery.reset_verify';
 
     public function __invoke(Request $request, string $_token): Response
     {
+        // Under normal circumstances,
+        // this point should never be reached
+        // because the authenticator class should automatically
+        // redirect the user to the password recovery form
+        // after successful token verification.
+        //
+        // This method is therefore only used as a fallback.
+        // If token verification fails
+        // the user will be redirected to the backend login page.
+
         // This will show the password recovery link
         $session = $request->getSession();
         $session->start();
@@ -41,7 +46,6 @@ class TokenAuthenticationController extends AbstractController
             ->set('_show_password_recovery_link', 'true')
         ;
 
-        // Fallback: Redirect user to the Contao backend login form
         $url = $this->router->generate('contao_backend', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new RedirectResponse($url);
