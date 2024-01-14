@@ -28,8 +28,8 @@ class LoginFailureSubscriber implements EventSubscriberInterface
 
     /**
      * Replaces the importUser Hook,
-     * that has been removed in Contao 5
-     * 
+     * that has been removed in Contao 5.
+     *
      * https://github.com/symfony/symfony/blob/7.0/src/Symfony/Component/Security/Http/Event/LoginFailureEvent.php
      */
     public function onLoginFailure(LoginFailureEvent $event): void
