@@ -18,7 +18,6 @@ use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\UserIdentifierFormController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -35,12 +34,12 @@ class ParseTemplateListener
     public const HOOK = 'parseTemplate';
 
     public function __construct(
-        private readonly RequestStack $requestStack,
         private readonly Environment $twig,
-        private readonly TranslatorInterface $translator,
-        private readonly UriSigner $uriSigner,
+        private readonly RequestStack $requestStack,
         private readonly RouterInterface $router,
         private readonly ScopeMatcher $scopeMatcher,
+        private readonly TranslatorInterface $translator,
+        private readonly UriSigner $uriSigner,
         private readonly bool $showButtonOnLoginFailureOnly,
     ) {
     }
@@ -53,7 +52,6 @@ class ParseTemplateListener
     public function __invoke(Template $template): void
     {
         if (str_starts_with($template->getName(), 'be_login')) {
-            /** @var Request $request */
             $request = $this->requestStack->getCurrentRequest();
 
             // Skip listener if we have a cron request
@@ -77,6 +75,7 @@ class ParseTemplateListener
 
                 $href = $this->router->generate(UserIdentifierFormController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
                 $href .= !empty($locale) ? '?_locale='.$locale : '';
+
                 $template->messages .= $this->twig->render(
                     '@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig',
                     [
