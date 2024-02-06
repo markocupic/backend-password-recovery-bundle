@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\ContaoManager;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -35,6 +36,7 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface, Extension
     public function getBundles(ParserInterface $parser): array
     {
         return [
+            BundleConfig::create(UriSigner::class),
             BundleConfig::create(MarkocupicBackendPasswordRecoveryBundle::class)
                 ->setLoadAfter([ContaoCoreBundle::class]),
         ];

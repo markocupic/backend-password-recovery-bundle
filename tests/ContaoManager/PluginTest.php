@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2023 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Tests\ContaoManager;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\DelegatingParser;
@@ -21,22 +22,14 @@ use Contao\TestCase\ContaoTestCase;
 use Markocupic\BackendPasswordRecoveryBundle\ContaoManager\Plugin;
 use Markocupic\BackendPasswordRecoveryBundle\MarkocupicBackendPasswordRecoveryBundle;
 
-/**
- * Class PluginTest.
- */
 class PluginTest extends ContaoTestCase
 {
-    /**
-     * Test Contao manager plugin class instantiation.
-     */
+
     public function testInstantiation(): void
     {
         $this->assertInstanceOf(Plugin::class, new Plugin());
     }
 
-    /**
-     * Test returns the bundles.
-     */
     public function testGetBundles(): void
     {
         $plugin = new Plugin();
@@ -44,9 +37,11 @@ class PluginTest extends ContaoTestCase
         /** @var array $bundles */
         $bundles = $plugin->getBundles(new DelegatingParser());
 
-        $this->assertCount(1, $bundles);
+        $this->assertCount(2, $bundles);
         $this->assertInstanceOf(BundleConfig::class, $bundles[0]);
-        $this->assertSame(MarkocupicBackendPasswordRecoveryBundle::class, $bundles[0]->getName());
-        $this->assertSame([ContaoCoreBundle::class], $bundles[0]->getLoadAfter());
+        $this->assertSame(UriSigner::class, $bundles[0]->getName());
+        $this->assertInstanceOf(BundleConfig::class, $bundles[1]);
+        $this->assertSame(MarkocupicBackendPasswordRecoveryBundle::class, $bundles[1]->getName());
+        $this->assertSame([ContaoCoreBundle::class], $bundles[1]->getLoadAfter());
     }
 }

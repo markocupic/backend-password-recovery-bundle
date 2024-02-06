@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
@@ -28,7 +29,6 @@ use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -106,7 +106,7 @@ class UserIdentifierFormController extends AbstractController
             // Redirect to the confirmation page
             $href = $this->router->generate(SendEmailConfirmController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            return $this->redirect($this->uriSigner->sign($href));
+            return $this->redirect($this->uriSigner->sign($href, $this->tokenLifetime));
         }
 
         $objTemplate = new BackendTemplate('be_password_recovery_form');

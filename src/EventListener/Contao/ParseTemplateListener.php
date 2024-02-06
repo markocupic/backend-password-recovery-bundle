@@ -14,12 +14,12 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\EventListener\Contao;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\UserIdentifierFormController;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -41,6 +41,7 @@ class ParseTemplateListener
         private readonly TranslatorInterface $translator,
         private readonly UriSigner $uriSigner,
         private readonly bool $showButtonOnLoginFailureOnly,
+        private readonly int $tokenLifetime,
     ) {
     }
 
@@ -79,7 +80,7 @@ class ParseTemplateListener
                 $template->messages .= $this->twig->render(
                     '@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig',
                     [
-                        'href' => $this->uriSigner->sign($href),
+                        'href' => $this->uriSigner->sign($href, $this->tokenLifetime),
                         'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),
                     ]
                 );
