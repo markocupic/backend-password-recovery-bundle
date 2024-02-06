@@ -20,6 +20,6 @@ class UserNotFoundAuthenticationException extends AuthenticationException
 {
     public function getMessageKey(): string
     {
-        return 'contaoUserNotFoundAuth';
+        return 'contaoUserNotFoundOrLinkHasExpiredAuth';
     }
 }

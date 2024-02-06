@@ -15,7 +15,7 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Passwortrückstellung fehlgeschlagen. Benutzer nicht gefunden.';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundOrLinkHasExpiredAuth'] = 'Passwortrückstellung fehlgeschlagen. Benutzer nicht gefunden oder der Wiederherstellungslink ist abgelaufen.';
 $GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'Während des Versuchs das Passwort wiederherzustellen, ist es zu einem unerwarteten Fehler gekommen.';
 
 /*

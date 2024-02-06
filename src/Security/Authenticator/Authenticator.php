@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\BackendUser;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
@@ -48,6 +49,7 @@ class Authenticator extends AbstractAuthenticator
         private readonly ScopeMatcher $scopeMatcher,
         private readonly Security $security,
         private readonly TranslatorInterface $translator,
+        private readonly UriSigner $uriSigner,
         private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
     }
@@ -86,6 +88,10 @@ class Authenticator extends AbstractAuthenticator
         $token = $request->attributes->get('_token');
 
         try {
+            if(!$this->uriSigner->checkRequest($request)){
+                throw new UserNotFoundAuthenticationException('Password reset link has expired.');
+            }
+
             $token = base64_decode((string) $token, true);
             $now = time();
             $t = $userAdapter->getTable();

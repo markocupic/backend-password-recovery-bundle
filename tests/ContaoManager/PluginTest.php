@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Tests\ContaoManager;
 
-use Code4Nix\UriSigner\UriSigner;
+use Code4Nix\UriSigner\Code4NixUriSigner;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\DelegatingParser;
@@ -39,7 +39,7 @@ class PluginTest extends ContaoTestCase
 
         $this->assertCount(2, $bundles);
         $this->assertInstanceOf(BundleConfig::class, $bundles[0]);
-        $this->assertSame(UriSigner::class, $bundles[0]->getName());
+        $this->assertSame(Code4NixUriSigner::class, $bundles[0]->getName());
         $this->assertInstanceOf(BundleConfig::class, $bundles[1]);
         $this->assertSame(MarkocupicBackendPasswordRecoveryBundle::class, $bundles[1]->getName());
         $this->assertSame([ContaoCoreBundle::class], $bundles[1]->getLoadAfter());

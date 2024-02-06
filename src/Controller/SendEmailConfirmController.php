@@ -14,13 +14,13 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
+use Code4Nix\UriSigner\UriSigner;
 use Contao\BackendTemplate;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\UriSigner;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 

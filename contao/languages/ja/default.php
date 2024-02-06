@@ -15,7 +15,7 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'パスワードのリセットに失敗しました。';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundOrLinkHasExpiredAuth'] = 'パスワードのリセットに失敗しました。ユーザーが見つからないか、パスワード回復リンクの有効期限が切れています。';
 $GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'パスワードを回復しようとして予期しないエラーが発生しました。';
 
 /*

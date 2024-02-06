@@ -15,7 +15,7 @@ declare(strict_types=1);
 /*
  * Errors
  */
-$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundAuth'] = 'Password reset failed. user not found.';
+$GLOBALS['TL_LANG']['ERR']['contaoUserNotFoundOrLinkHasExpiredAuth'] = 'Password reset failed. User not found or password recovery link has expired.';
 $GLOBALS['TL_LANG']['ERR']['unexpectedAuth'] = 'An unexpected error occurred while trying to recover the password.';
 
 /*
