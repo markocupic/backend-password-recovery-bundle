@@ -20,10 +20,12 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Message;
+use Contao\User;
 use Contao\UserModel;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\ResetVerifyController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
+use Scheb\TwoFactorBundle\Security\Http\Authenticator\TwoFactorAuthenticator;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,6 +42,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Authenticator extends AbstractAuthenticator
 {
+    public const NAME = 'contao_forgott_password_authenticator';
     public const CONTAO_LOG_PW_RECOVERY_SUCCESS = 'BE_PW_RECOVERY_SUCCESS';
     public const CONTAO_LOG_PW_RECOVERY_FAILURE = 'BE_PW_RECOVERY_FAILURE';
 
@@ -88,7 +91,7 @@ class Authenticator extends AbstractAuthenticator
         $token = $request->attributes->get('_token');
 
         try {
-            if(!$this->uriSigner->checkRequest($request)){
+            if (!$this->uriSigner->checkRequest($request)) {
                 throw new UserNotFoundAuthenticationException('Password reset link has expired.');
             }
 
@@ -157,5 +160,27 @@ class Authenticator extends AbstractAuthenticator
         $url = $this->router->generate('contao_backend', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new RedirectResponse($url);
+    }
+
+    /**
+     * Bypass 2FA for this authenticator.
+     */
+    public function createToken(Passport $passport, string $firewallName): TokenInterface
+    {
+        $token = parent::createToken($passport, $firewallName);
+
+        $token->setAttribute('AUTHENTICATOR', self::NAME);
+
+        $user = $token->getUser();
+
+        if (!$user instanceof User) {
+            return $token;
+        }
+
+        if ($user->useTwoFactor) {
+            $token->setAttribute(TwoFactorAuthenticator::FLAG_2FA_COMPLETE, true);
+        }
+
+        return $token;
     }
 }
