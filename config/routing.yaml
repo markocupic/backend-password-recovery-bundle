@@ -1,4 +1,4 @@
 contao:
     resource: ../src/Controller
-    type: annotation
+    type: attribute
 
