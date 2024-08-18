@@ -1,4 +1,0 @@
-contao:
-    resource: ../src/Controller
-    type: attribute
-
