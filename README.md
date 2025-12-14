@@ -1,22 +1,29 @@
 <img src="./docs/logo.png" alt="logo" style="width:300px">
 
 # Contao Backend Password Recovery Bundle
-Senden Sie Benutzern niemals Passwörter über E-Mail.
 
-Dieses Plugin blendet **nach** falscher Eingabe des **Backend-User-Passwortes** einen "Passwort-Wiederherstellen-Button" ein. Durch Eingabe des Benutzernamens oder der E-Mail-Adresse wird dem User **eine E-Mail mit einem Link** zugesandt. Damit kann der Backend-User sein Passwort neu erstellen.
+**Never send users passwords via email.**
+
+This plugin displays a “recover password button” **after** incorrect entry of the **backend user password**.
+By entering the user name or e-mail address, the user **is sent an e-mail with a link**.
+This allows the backend user to restore their password.
 
 ## Installation
-Via composer mit `composer require markocupic/backend-password-recovery-bundle`
-oder Contao Manager. Nach der Installation Datenbank-Update ausführen.
+
+- On your console you can run `composer require markocupic/backend-password-recovery-bundle`
+- Or you can install the extension via Contao Manager.
+- Don't forget to run `bin/console contao:install` or the db migration tool in Contao Manager.
 
 ## Bedienung
-| Nach ungültiger Passworteingabe wird der "Passwort wiederherstellen Button" eingeblendet. | Benutzernamen oder E-Mail-Adresse eingeben. | Benutzer erhält eine E-Mail mit Link zugesandt und richtet sein neues Passwort ein. |
-|-------------------------------------------------------------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------|
-| <img src="./docs/print_screen_1.png">                                                     | <img src="./docs/print_screen_2.png">       | <img src="./docs/print_screen_3.png">                                               |
+
+| If an invalid password is entered, the “Restore password” button is displayed. | Enter your user name or e-mail address. | User receives an e-mail with a link and sets up their new password. |
+|--------------------------------------------------------------------------------|-----------------------------------------|---------------------------------------------------------------------|
+| <img src="./docs/print_screen_1.png">                                          | <img src="./docs/print_screen_2.png">   | <img src="./docs/print_screen_3.png">                               |
 
 ## Konfiguration
-Nach der Installation ist keine weitere Konfiguration nötig.
-Der **E-Mail-Betreff** und **E-Mail-Text** können über die **Sprachdatei** angepasst werden.
+
+No further configuration is required after installation.
+The **email subject** and **email text** can be customized via the **language file**.
 
 ```
 // contao/languages/de/default.php
@@ -24,7 +31,7 @@ $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailSubject'] = 'Lorem ipsum';
 $GLOBALS['TL_LANG']['MSC']['pwRecoveryEmailText']  = 'Lorem ipsum';
 ```
 
-Um die **Sicherheit** zu erhöhen, beträgt die standardmässige **Gültigkeitsdauer** des **Links** 10 Minuten. Diese kann jedoch in der Datei  `config/config.yaml` angepasst werden.
+To increase **security**, the default **validity period** of the **link** is 10 minutes. However, this can be adjusted in the `config/config.yaml` file.
 
 ```
 # config/config.yaml
@@ -32,8 +39,8 @@ markocupic_backend_password_recovery:
     token_lifetime: 900 # default 600 s (10 min)
 ```
 
-Standardmässig wird der "Passwort wiederherstellen Button" **erst nach der Eingabe eines falschen Passwortes** eingeblendet.
-Dies lässt sich jedoch anpassen, sodass der Button **permanent sichtbar** ist.
+By default, the “Restore password” button **is only displayed after an incorrect password** has been entered.
+However, this can be adjusted so that the button is **permanently visible**.
 
 ```
 # config/config.yaml
