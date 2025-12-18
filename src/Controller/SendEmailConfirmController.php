@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Backend Password Recovery Bundle.
+ * This file is part of "Backend Password Recovery Bundle".
  *
- * (c) Marko Cupic 2025 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -49,10 +49,10 @@ class SendEmailConfirmController extends AbstractController
         $this->getContaoAdapter(System::class)->loadLanguageFile('default');
         $this->getContaoAdapter(System::class)->loadLanguageFile('modules');
 
-        $objTemplate = new BackendTemplate('be_password_recovery_confirm');
-        $objTemplate->backHref = $this->router->generate('contao_backend');
-        $this->addMoreDataToTemplate($objTemplate, $request, $this->framework);
+        $template = new BackendTemplate('be_password_recovery_confirm');
+        $template->backHref = $this->router->generate('contao_backend');
+        $this->addMoreDataToTemplate($template, $request, $this->framework);
 
-        return $objTemplate->getResponse();
+        return $template->getResponse();
     }
 }

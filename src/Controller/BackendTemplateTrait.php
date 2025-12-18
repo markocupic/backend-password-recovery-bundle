@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Backend Password Recovery Bundle.
+ * This file is part of "Backend Password Recovery Bundle".
  *
- * (c) Marko Cupic 2025 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -25,13 +25,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 trait BackendTemplateTrait
 {
-    protected function addMoreDataToTemplate(BackendTemplate $objTemplate, Request $request, ContaoFramework $framework): void
+    protected function addMoreDataToTemplate(BackendTemplate $template, Request $request, ContaoFramework $framework): void
     {
-        $objTemplate->theme = $framework->getAdapter(Backend::class)->getTheme();
-        $objTemplate->messages = $framework->getAdapter(Message::class)->generate();
-        $objTemplate->base = $framework->getAdapter(Environment::class)->get('base');
-        $objTemplate->language = $framework->getAdapter(LocaleUtil::class)->formatAsLanguageTag($request->getLocale());
-        $objTemplate->host = $framework->getAdapter(Backend::class)->getDecodedHostname();
-        $objTemplate->charset = $framework->getAdapter(Config::class)->get('characterSet');
+        $template->theme = $framework->getAdapter(Backend::class)->getTheme();
+        $template->messages = $framework->getAdapter(Message::class)->generate();
+        $template->base = $framework->getAdapter(Environment::class)->get('base');
+        $template->language = $framework->getAdapter(LocaleUtil::class)->formatAsLanguageTag($request->getLocale());
+        $template->host = $framework->getAdapter(Backend::class)->getDecodedHostname();
+        $template->charset = $framework->getAdapter(Config::class)->get('characterSet');
     }
 }
