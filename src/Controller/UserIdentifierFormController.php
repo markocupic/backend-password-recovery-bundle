@@ -16,23 +16,28 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Code4Nix\UriSigner\UriSigner;
 use Contao\BackendTemplate;
-use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
-use Contao\Email;
-use Contao\Environment;
 use Contao\Message;
 use Contao\System;
 use Contao\UserModel;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
+use Markocupic\BackendPasswordRecoveryBundle\NotificationType\BackendPasswordRecoveryNotificationType;
+use Markocupic\BackendPasswordRecoveryBundle\Notifier\DefaultMailer;
+use Markocupic\BackendPasswordRecoveryBundle\Notifier\NC;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Terminal42\NotificationCenterBundle\NotificationCenter;
 
 #[Route('/_backend_password_recovery/form', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
 class UserIdentifierFormController extends AbstractController
@@ -40,13 +45,19 @@ class UserIdentifierFormController extends AbstractController
     use BackendTemplateTrait;
 
     public const ROUTE = 'backend_password_recovery.user_identifier_form';
+
     public const CONTAO_LOG_PW_RECOVERY_REQUEST = 'BE_PW_RECOVERY_REQUEST';
 
     public function __construct(
+        private readonly Connection $connection,
         private readonly ContaoFramework $framework,
+        private readonly DefaultMailer $defaultMailer,
+        private readonly NC $nc,
+        private readonly NotificationCenter $notificationCenter,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
         private readonly UriSigner $uriSigner,
+        #[Autowire(param: 'markocupic_backend_password_recovery.token_lifetime')]
         private readonly int $tokenLifetime,
         private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
@@ -56,118 +67,114 @@ class UserIdentifierFormController extends AbstractController
     {
         $this->initializeContaoFramework();
 
-        $messageAdapter = $this->framework->getAdapter(Message::class);
-        $systemAdapter = $this->framework->getAdapter(System::class);
-        $userAdapter = $this->framework->getAdapter(UserModel::class);
-        $uuidAdapter = $this->framework->getAdapter(Uuid::class);
-
         if (!$this->uriSigner->checkRequest($request)) {
             return new Response('Access denied!', Response::HTTP_FORBIDDEN);
         }
 
-        $systemAdapter->loadLanguageFile('default');
-        $systemAdapter->loadLanguageFile('modules');
+        $this->loadRequiredLanguageFiles(['default', 'modules']);
 
-        $usernameOrEmail = $request->request->get('usernameOrEmail');
+        $identifier = $request->request->get('usernameOrEmail');
 
-        if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && !empty($usernameOrEmail)) {
-            $now = time();
-            $t = $userAdapter->getTable();
-            $where = ["($t.email LIKE ? OR $t.username = ?) AND $t.disable = '' AND ($t.start = '' OR $t.start < ?) AND ($t.stop = '' OR $t.stop > ?)"];
-
-            $user = $userAdapter->findOneBy($where, [$usernameOrEmail, $usernameOrEmail, $now, $now]);
-
-            if (null !== $user) {
-                $token = $uuidAdapter->uuid4()->toString();
-
-                // Save token and token lifetime to the user entity
-                $user->pwResetToken = $token;
-                $user->pwResetLifetime = time() + $this->tokenLifetime; // Default 600 (10 min)
-                $user->save();
-
-                // Generate password recovery link
-                $strLink = $this->router->generate(ResetVerifyController::ROUTE, ['_token' => base64_encode($token)], UrlGeneratorInterface::ABSOLUTE_URL);
-
-                // Sign url
-                $strLink = $this->uriSigner->sign($strLink, $this->tokenLifetime);
-
-                // Redirect back to the login form on error
-                if (!$this->sendEmail($user, $strLink)) {
-                    $messageAdapter->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
-                    $href = $this->router->generate('contao_backend', [], UrlGeneratorInterface::ABSOLUTE_URL);
-
-                    return $this->redirect($href);
-                }
-
-                // Add a log entry to Contao system log
-                $this->contaoGeneralLogger?->info(
-                    sprintf('Password recovery link has been sent to backend user "%s" ID %d.', $user->username, $user->id),
-                    ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_REQUEST)]
-                );
-            }
-
-            // Redirect to the confirmation page
-            $href = $this->router->generate(SendEmailConfirmController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
-
-            return $this->redirect($this->uriSigner->sign($href, $this->tokenLifetime));
+        if ('tl_require_password_link_form' === $request->request->get('FORM_SUBMIT') && !empty($identifier)) {
+            return $this->handleFormSubmit($identifier);
         }
 
-        $objTemplate = new BackendTemplate('be_password_recovery_form');
-        $objTemplate->backHref = $this->router->generate('contao_backend');
-        $this->addMoreDataToTemplate($objTemplate, $request, $this->framework);
+        $template = new BackendTemplate('be_password_recovery_form');
+        $template->backHref = $this->router->generate('contao_backend');
+        $this->addMoreDataToTemplate($template, $request, $this->framework);
 
-        return $objTemplate->getResponse();
+        return $template->getResponse();
     }
 
-    private function sendEmail(UserModel $user, string $strLink): bool
+    private function handleFormSubmit(string $identifier): RedirectResponse
     {
-        try {
-            // Adapters
-            $environmentAdapter = $this->framework->getAdapter(Environment::class);
-            $configAdapter = $this->framework->getAdapter(Config::class);
+        $user = $this->findUserByIdentifier($identifier);
 
-            // Send email with password recovery link to the user
-            $email = new Email();
-            $email->from = $GLOBALS['TL_ADMIN_EMAIL'] ?? $configAdapter->get('adminEmail');
+        if (null !== $user) {
+            $token = Uuid::uuid4()->toString();
 
-            // Email: subject
-            $strSubject = str_replace('#host#', $environmentAdapter->get('base'), $this->translator->trans('MSC.pwRecoveryEmailSubject', [], 'contao_default'));
-            $email->subject = $strSubject;
+            // Save token and token lifetime to the user entity.
+            $user->pwResetToken = $token;
+            $user->pwResetLifetime = time() + $this->tokenLifetime; // Default 600 (10 min)
+            $user->save();
 
-            // Email: text
-            $strText = str_replace('#host#', $environmentAdapter->get('base'), $this->translator->trans('MSC.pwRecoveryEmailText', [], 'contao_default'));
-            $strText = str_replace('#link#', $strLink, $strText);
-            $strText = str_replace('#lifetime#', (string) floor($this->tokenLifetime / 60), $strText);
+            $link = $this->generateLink($token);
+            $notificationIds = $this->getNotificationIds();
 
-            // Add user props
-            foreach ($user->row() as $k => $v) {
-                $skip = [
-                    'password',
-                ];
-
-                if (\in_array($k, $skip, true)) {
-                    continue;
-                }
-
-                if (is_numeric($v) || \is_string($v)) {
-                    if (false !== json_encode((string) $v)) {
-                        $strText = str_replace("#user_$k#", (string) $v, $strText);
-                    }
-                }
+            if (!empty($notificationIds)) {
+                $success = $this->nc->send($user, $link, $notificationIds);
+            } else {
+                $success = $this->defaultMailer->send($user, $link);
             }
 
-            $email->text = $strText;
+            if (!$success) {
+                $this->getContaoAdapter(Message::class)->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
 
-            // Send the email
-            $emailSuccess = $email->sendTo($user->email);
+                // Redirect the user to the backend login page.
+                $href = $this->router->generate('contao_backend', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            if (!$emailSuccess) {
-                throw new \Exception('Something went wrong while trying to send the password recovery link.');
+                return $this->redirect($href);
             }
 
-            return true;
-        } catch (\Exception $e) {
-            return false;
+            // Add a message to the Contao system log.
+            $this->contaoGeneralLogger?->info(
+                \sprintf('Password recovery link has been sent to backend user "%s" ID %d.', $user->username, $user->id),
+                ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_REQUEST)],
+            );
         }
+
+        // Redirect the user to the confirmation page.
+        $href = $this->router->generate(SendEmailConfirmController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return $this->redirect($this->uriSigner->sign($href, $this->tokenLifetime));
+    }
+
+    private function loadRequiredLanguageFiles(array $langFiles): void
+    {
+        foreach ($langFiles as $langFile) {
+            $this->getContaoAdapter(System::class)->loadLanguageFile($langFile);
+        }
+    }
+
+    private function generateLink(string $token): string
+    {
+        $link = $this->router->generate(ResetVerifyController::ROUTE, ['_token' => base64_encode($token)], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return $this->uriSigner->sign($link, $this->tokenLifetime);
+    }
+
+    private function getNotificationIds(): array
+    {
+        $type = BackendPasswordRecoveryNotificationType::NAME;
+
+        return $this->connection->fetchFirstColumn(
+            'SELECT id FROM tl_nc_notification WHERE type = ?',
+            [$type],
+            [Types::STRING],
+        );
+    }
+
+    private function findUserByIdentifier(string $identifier): UserModel|null
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('id')
+            ->from('tl_user', 't')
+            ->where('t.email LIKE :identifier OR t.username = :identifier')
+            ->andWhere('t.disable = ""')
+            ->andWhere('t.start = "" OR t.start < :now')
+            ->andWhere('t.stop = "" OR t.stop > :now')
+            ->setParameters([
+                'identifier' => $identifier,
+                'now' => time(),
+            ])
+        ;
+
+        $id = $qb->fetchOne();
+
+        if (false === $id) {
+            return null;
+        }
+
+        return $this->getContaoAdapter(UserModel::class)->findById($id);
     }
 }

@@ -28,7 +28,9 @@
         "ramsey/uuid": "^4.0",
         "scheb/2fa-bundle": "^6.0 || ^7.0",
         "symfony/http-foundation": "^6.4 || ^7.1",
-        "symfony/security-bundle": "^6.4 || ^7.1"
+        "symfony/dependency-injection": "^6.4 || ^7.0",
+        "symfony/security-bundle": "^6.4 || ^7.1",
+        "terminal42/notification_center": "^2.0"
     },
     "autoload": {
         "psr-4": {

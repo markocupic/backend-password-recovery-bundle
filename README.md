@@ -14,13 +14,33 @@ This allows the backend user to restore their password.
 - Or you can install the extension via Contao Manager.
 - Don't forget to run `bin/console contao:install` or the db migration tool in Contao Manager.
 
-## Bedienung
+## The password recovery process
 
 | If an invalid password is entered, the “Restore password” button is displayed. | Enter your user name or e-mail address. | User receives an e-mail with a link and sets up their new password. |
 |--------------------------------------------------------------------------------|-----------------------------------------|---------------------------------------------------------------------|
 | <img src="./docs/print_screen_1.png">                                          | <img src="./docs/print_screen_2.png">   | <img src="./docs/print_screen_3.png">                               |
 
-## Konfiguration
+## Notification Center
+
+If no notification of the ‘Type Backed user: Password recovery’ has been created, Contao will automatically send an email with the recovery link using the Symfony mailer.
+
+If you would like to send the recovery link via the Notification Center, you must first create a message of type ‘Backed user: Password recovery’ in the Contao backend.
+
+```
+Hello ##user_username##
+
+Here is your password recovery link:
+
+##link##
+
+Please note that the link is only valid for ##token_lifetime## min.
+
+Kind regards
+
+##admin_name##
+```
+
+## Configuration
 
 No further configuration is required after installation.
 The **email subject** and **email text** can be customized via the **language file**.

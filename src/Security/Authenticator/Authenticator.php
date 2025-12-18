@@ -43,7 +43,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class Authenticator extends AbstractAuthenticator
 {
     public const NAME = 'contao_forgott_password_authenticator';
+
     public const CONTAO_LOG_PW_RECOVERY_SUCCESS = 'BE_PW_RECOVERY_SUCCESS';
+
     public const CONTAO_LOG_PW_RECOVERY_FAILURE = 'BE_PW_RECOVERY_FAILURE';
 
     public function __construct(
@@ -107,7 +109,7 @@ class Authenticator extends AbstractAuthenticator
             }
         } catch (UserNotFoundAuthenticationException $e) {
             $messageAdapter->addError($this->translator->trans('ERR.'.$e->getMessageKey(), [], 'contao_default'));
-            $log = sprintf('Could not retrieve Contao user from token "%s".', $token);
+            $log = \sprintf('Could not retrieve Contao user from token "%s".', $token);
 
             throw new AuthenticationException($log);
         } catch (\Exception $e) {
@@ -139,8 +141,8 @@ class Authenticator extends AbstractAuthenticator
 
         // Add a log entry to Contao system log
         $this->contaoGeneralLogger?->info(
-            sprintf('Backend user "%s" has recovered his password.', $username),
-            ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_SUCCESS)]
+            \sprintf('Backend user "%s" has recovered his password.', $username),
+            ['contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_SUCCESS)],
         );
 
         $url = $this->router->generate('contao_backend_password', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -152,6 +154,7 @@ class Authenticator extends AbstractAuthenticator
     {
         $session = $request->getSession();
         $session->start();
+
         $session
             ->getFlashBag()
             ->set('_show_password_recovery_link', 'true')

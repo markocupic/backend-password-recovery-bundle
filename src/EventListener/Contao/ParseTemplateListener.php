@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Backend Password Recovery Bundle.
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic 2025 <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -19,6 +19,7 @@ use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Template;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\UserIdentifierFormController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -40,7 +41,9 @@ class ParseTemplateListener
         private readonly ScopeMatcher $scopeMatcher,
         private readonly TranslatorInterface $translator,
         private readonly UriSigner $uriSigner,
+        #[Autowire(param: 'markocupic_backend_password_recovery.show_password_recovery_link_on_login_failure_only')]
         private readonly bool $showButtonOnLoginFailureOnly,
+        #[Autowire(param: 'markocupic_backend_password_recovery.token_lifetime')]
         private readonly int $tokenLifetime,
     ) {
     }
@@ -77,13 +80,10 @@ class ParseTemplateListener
                 $href = $this->router->generate(UserIdentifierFormController::ROUTE, [], UrlGeneratorInterface::ABSOLUTE_URL);
                 $href .= !empty($locale) ? '?_locale='.$locale : '';
 
-                $template->messages .= $this->twig->render(
-                    '@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig',
-                    [
-                        'href' => $this->uriSigner->sign($href, $this->tokenLifetime),
-                        'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),
-                    ]
-                );
+                $template->messages .= $this->twig->render('@MarkocupicBackendPasswordRecovery/password_recovery_link.html.twig', [
+                    'href' => $this->uriSigner->sign($href, $this->tokenLifetime),
+                    'recoverPassword' => $this->translator->trans('MSC.recoverPassword', [], 'contao_default'),
+                ]);
             }
         }
     }
