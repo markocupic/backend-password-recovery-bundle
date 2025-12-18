@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Backend Password Recovery Bundle.
+ * This file is part of "Backend Password Recovery Bundle".
  *
- * (c) Marko Cupic 2024 <m.cupic@gmx.ch>
+ * (c) Marko Cupic <m.cupic@gmx.ch>
  * @license MIT
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code.
@@ -22,6 +22,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\Message;
 use Contao\User;
 use Contao\UserModel;
+use Doctrine\DBAL\Connection;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\ResetVerifyController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
@@ -42,13 +43,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Authenticator extends AbstractAuthenticator
 {
-    public const NAME = 'contao_forgott_password_authenticator';
+    public const NAME = 'contao_forget_password_authenticator';
 
     public const CONTAO_LOG_PW_RECOVERY_SUCCESS = 'BE_PW_RECOVERY_SUCCESS';
 
     public const CONTAO_LOG_PW_RECOVERY_FAILURE = 'BE_PW_RECOVERY_FAILURE';
 
     public function __construct(
+        private readonly Connection $connection,
         private readonly ContaoFramework $framework,
         private readonly RouterInterface $router,
         private readonly ScopeMatcher $scopeMatcher,
@@ -88,7 +90,6 @@ class Authenticator extends AbstractAuthenticator
         $this->framework->initialize();
 
         $messageAdapter = $this->framework->getAdapter(Message::class);
-        $userAdapter = $this->framework->getAdapter(UserModel::class);
 
         $token = $request->attributes->get('_token');
 
@@ -98,11 +99,7 @@ class Authenticator extends AbstractAuthenticator
             }
 
             $token = base64_decode((string) $token, true);
-            $now = time();
-            $t = $userAdapter->getTable();
-            $where = ["$t.pwResetToken = ? AND $t.pwResetLifetime > ? AND $t.disable = '' AND ($t.start = '' OR $t.start < ?) AND ($t.stop = '' OR $t.stop > ?)"];
-
-            $user = $userAdapter->findOneBy($where, [$token, $now, $now, $now]);
+            $user = $this->findUserByToken($token);
 
             if (null === $user) {
                 throw new UserNotFoundAuthenticationException('Could not retrieve Contao user from password recovery token.');
@@ -185,5 +182,30 @@ class Authenticator extends AbstractAuthenticator
         }
 
         return $token;
+    }
+
+    private function findUserByToken(string $token): UserModel|null
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb->select('id')
+            ->from('tl_user', 't')
+            ->where('t.pwResetToken = :token')
+            ->andWhere('t.pwResetLifetime > :now')
+            ->andWhere('t.disable = 0')
+            ->andWhere('t.start = "" OR t.start < :now')
+            ->andWhere('t.stop = "" OR t.stop > :now')
+            ->setParameters([
+                'token' => $token,
+                'now' => time(),
+            ])
+        ;
+
+        $id = $qb->fetchOne();
+
+        if (false === $id) {
+            return null;
+        }
+
+        return $this->framework->getAdapter(UserModel::class)->findById($id);
     }
 }
