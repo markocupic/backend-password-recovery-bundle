@@ -36,7 +36,7 @@
 
 .backend-password-recovery {
   > p {
-    border-top: 2px solid #ffffff;
+    border-top: 2px solid var(--border, #ffffff);
     padding-top: 20px;
   }
 
@@ -44,8 +44,22 @@
     padding-bottom: 45px;
   }
 
+  // The buttons are stacked, give them the same left edge
+  .submit_container {
+    .tl_submit {
+      display: block;
+      width: 100%;
+      margin: 0;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .tl_submit + .tl_submit {
+      margin-top: 8px;
+    }
+  }
+
   .btn-link {
-    margin: 0;
     float: initial;
     vertical-align: initial;
   }
@@ -59,14 +73,6 @@
       background-color: #359345;
       border-color: #31A64B;
     }
-  }
-
-  .ms-0, .mt-0, .mb-0, me-0 {
-    margin: 0 !important;
-  }
-
-  .ms-1, .mt-1, .mb-1, me-1 {
-    margin: 4px !important;
   }
 
   .widget {

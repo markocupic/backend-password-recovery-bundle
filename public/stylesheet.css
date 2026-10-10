@@ -1,45 +1,73 @@
-.tl_pw_recovery {
-    margin: 0 auto 16px auto;
-    max-width: 350px;
-    text-align: center;
+#passwordRecovery {
+  margin: 0 auto;
+  max-width: 350px;
+  text-align: center;
+  visibility: hidden;
+}
+#passwordRecovery.show {
+  visibility: visible;
+  animation: visible 0.8s;
+}
+@keyframes visible {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+#passwordRecovery a.tl_submit.password_recovery_link {
+  background-color: #f46c07;
+  border: transparent;
+  color: #fff;
+  margin-top: 15px;
+  display: block;
+  padding: 10px 13px;
+  height: auto;
+}
+#passwordRecovery a.tl_submit.password_recovery_link:hover {
+  background-color: #0f1c26;
 }
 
-.tl_pw_recovery > p {
-    border-top: 2px solid #ffffff;
-    padding-top: 20px;
+.backend-password-recovery > p {
+  border-top: 2px solid var(--border, #ffffff);
+  padding-top: 20px;
 }
-
-.tl_pw_recovery a.tl_submit.password_recovery_link {
-    background-color: #f46c07;
-    border: transparent;
-    color: #fff;
-    margin-top: 15px;
-    display: block;
-    padding: 12px 13px;
-    height: auto;
+.backend-password-recovery .tl_require_password_link_form .formbody {
+  padding-bottom: 45px;
 }
-
-.tl_pw_recovery a.tl_submit.password_recovery_link:hover {
-    background-color: #0f1c26;
+.backend-password-recovery .submit_container .tl_submit {
+  display: block;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: center;
 }
-
-.tl_require_password_link_form .formbody {
-    padding-bottom: 45px;
+.backend-password-recovery .submit_container .tl_submit + .tl_submit {
+  margin-top: 8px;
 }
-
+.backend-password-recovery .btn-link {
+  float: initial;
+  vertical-align: initial;
+}
+.backend-password-recovery .button-primary {
+  background-color: #31A64B;
+  border-color: #31A64B;
+  color: #ffffff;
+}
+.backend-password-recovery .button-primary:hover {
+  background-color: #359345;
+  border-color: #31A64B;
+}
 .backend-password-recovery .widget {
-    padding-top: 10px;
+  padding-top: 10px;
 }
-
 .backend-password-recovery .widget .tl_text {
-    margin-top: 10px;
+  margin-top: 10px;
 }
-
-.backend-password-recovery .widget label,
-.backend-password-recovery .main-inner p {
-    line-height: 1.5;
+.backend-password-recovery .widget label, .backend-password-recovery .main-inner p {
+  line-height: 1.5;
 }
-
 .backend-password-recovery .main-inner {
-    padding: 45px;
+  padding: 45px;
 }
