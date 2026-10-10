@@ -18,7 +18,7 @@ This allows the backend user to restore their password.
 
 - On your console you can run `composer require markocupic/backend-password-recovery-bundle`
 - Or you can install the extension via Contao Manager.
-- Don't forget to run `bin/console contao:install` or the db migration tool in Contao Manager.
+- Don't forget to update the database: run `vendor/bin/contao-console contao:migrate` or use the database migration in the Contao Manager. The bundle adds the columns `tl_user.pwResetToken` and `tl_user.pwResetLifetime`.
 
 ## The password recovery process
 

@@ -90,18 +90,38 @@ class UserIdentifierFormController extends AbstractController
         if (null !== $user) {
             $token = Uuid::uuid4()->toString();
 
-            // Save token and token lifetime to the user entity.
-            $user->pwResetToken = $token;
-            $user->pwResetLifetime = time() + $this->tokenLifetime; // Default 600 (10 min)
-            $user->save();
+            // Save token and token lifetime (default 600 s) directly in the database. The
+            // model is not used on purpose: if the columns are missing (database not
+            // migrated), the model would silently skip them and a link that can never work
+            // would be sent.
+            try {
+                $this->connection->update(
+                    'tl_user',
+                    ['pwResetToken' => $token, 'pwResetLifetime' => time() + $this->tokenLifetime],
+                    ['id' => (int) $user->id],
+                );
 
-            $link = $this->generateLink($token);
-            $notificationIds = null !== $this->nc ? $this->getNotificationIds() : [];
+                $success = true;
+            } catch (\Throwable $e) {
+                $this->contaoGeneralLogger?->error(
+                    \sprintf('Could not save the password recovery token of backend user "%s". Did you run the database migration? %s', $user->username, $e->getMessage()),
+                    ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR), 'exception' => $e],
+                );
 
-            if (null !== $this->nc && !empty($notificationIds)) {
-                $success = $this->nc->send($user, $link, $notificationIds);
-            } else {
-                $success = $this->defaultMailer->send($user, $link);
+                $success = false;
+            }
+
+            if ($success) {
+                $user->refresh();
+
+                $link = $this->generateLink($token);
+                $notificationIds = null !== $this->nc ? $this->getNotificationIds() : [];
+
+                if (null !== $this->nc && !empty($notificationIds)) {
+                    $success = $this->nc->send($user, $link, $notificationIds);
+                } else {
+                    $success = $this->defaultMailer->send($user, $link);
+                }
             }
 
             if (!$success) {
