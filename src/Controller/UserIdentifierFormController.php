@@ -135,7 +135,7 @@ class UserIdentifierFormController extends AbstractController
 
     private function generateLink(string $token): string
     {
-        $link = $this->router->generate(ResetVerifyController::ROUTE, ['_token' => base64_encode($token)], UrlGeneratorInterface::ABSOLUTE_URL);
+        $link = $this->router->generate(ResetVerifyController::ROUTE, ['_token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return $this->uriSigner->sign($link, $this->tokenLifetime);
     }

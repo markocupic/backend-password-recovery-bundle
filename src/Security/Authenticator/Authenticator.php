@@ -26,6 +26,7 @@ use Doctrine\DBAL\Connection;
 use Markocupic\BackendPasswordRecoveryBundle\Controller\ResetVerifyController;
 use Markocupic\BackendPasswordRecoveryBundle\Security\Authenticator\Exception\UserNotFoundAuthenticationException;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Scheb\TwoFactorBundle\Security\Http\Authenticator\TwoFactorAuthenticator;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -95,25 +96,25 @@ class Authenticator extends AbstractAuthenticator
 
         try {
             if (!$this->uriSigner->checkRequest($request)) {
-                throw new UserNotFoundAuthenticationException('Password reset link has expired.');
+                throw new UserNotFoundAuthenticationException('Password reset link has expired or its signature is invalid.');
             }
 
-            $token = base64_decode((string) $token, true);
-            $user = $this->findUserByToken($token);
+            $token = $this->decodeToken((string) $token);
+            $user = null === $token ? null : $this->findUserByToken($token);
 
             if (null === $user) {
                 throw new UserNotFoundAuthenticationException('Could not retrieve Contao user from password recovery token.');
             }
         } catch (UserNotFoundAuthenticationException $e) {
             $messageAdapter->addError($this->translator->trans('ERR.'.$e->getMessageKey(), [], 'contao_default'));
-            $log = \sprintf('Could not retrieve Contao user from token "%s".', $token);
+            $this->logFailure($e->getMessage(), $e);
 
-            throw new AuthenticationException($log);
-        } catch (\Exception $e) {
+            throw new AuthenticationException($e->getMessage(), 0, $e);
+        } catch (\Throwable $e) {
             $messageAdapter->addError($this->translator->trans('ERR.unexpectedAuth', [], 'contao_default'));
-            $log = 'Something went wrong while trying to recover the password.';
+            $this->logFailure(\sprintf('Something went wrong while trying to recover the password: %s', $e->getMessage()), $e);
 
-            throw new AuthenticationException($log);
+            throw new AuthenticationException('Something went wrong while trying to recover the password.', 0, $e);
         }
 
         return new SelfValidatingPassport(new UserBadge($user->username));
@@ -181,6 +182,29 @@ class Authenticator extends AbstractAuthenticator
         }
 
         return $token;
+    }
+
+    /**
+     * The token is a UUID and therefore URL safe. Links that were sent before contain
+     * the base64 encoded token.
+     */
+    private function decodeToken(string $token): string|null
+    {
+        if (Uuid::isValid($token)) {
+            return $token;
+        }
+
+        $decoded = base64_decode($token, true);
+
+        return false !== $decoded && Uuid::isValid($decoded) ? $decoded : null;
+    }
+
+    private function logFailure(string $message, \Throwable $e): void
+    {
+        $this->contaoGeneralLogger?->error($message, [
+            'contao' => new ContaoContext(__METHOD__, static::CONTAO_LOG_PW_RECOVERY_FAILURE),
+            'exception' => $e,
+        ]);
     }
 
     private function findUserByToken(string $token): UserModel|null

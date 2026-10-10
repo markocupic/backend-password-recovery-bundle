@@ -17,9 +17,11 @@ namespace Markocupic\BackendPasswordRecoveryBundle\Notifier;
 use Contao\Config;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\Email;
 use Contao\Environment;
 use Contao\UserModel;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -30,6 +32,7 @@ class DefaultMailer extends AbstractController
         private readonly TranslatorInterface $translator,
         #[Autowire(param: 'markocupic_backend_password_recovery.token_lifetime')]
         private readonly int $tokenLifetime,
+        private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
     }
 
@@ -81,6 +84,8 @@ class DefaultMailer extends AbstractController
 
             return true;
         } catch (\Exception $e) {
+            $this->contaoGeneralLogger?->error(\sprintf('Could not send the password recovery link via the default mailer to "%s": %s', $user->username, $e->getMessage()), ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR), 'exception' => $e]);
+
             return false;
         }
     }

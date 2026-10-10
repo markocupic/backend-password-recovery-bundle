@@ -15,8 +15,10 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Notifier;
 
 use Contao\CoreBundle\Controller\AbstractController;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\StringUtil;
 use Contao\UserModel;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Terminal42\NotificationCenterBundle\NotificationCenter;
 
@@ -26,6 +28,7 @@ class NC extends AbstractController
         private readonly NotificationCenter $notificationCenter,
         #[Autowire(param: 'markocupic_backend_password_recovery.token_lifetime')]
         private readonly int $tokenLifetime,
+        private readonly LoggerInterface|null $contaoGeneralLogger = null,
     ) {
     }
 
@@ -60,6 +63,8 @@ class NC extends AbstractController
                 throw new \Exception('Could not send the notification via Notification Center.');
             }
         } catch (\Exception $e) {
+            $this->contaoGeneralLogger?->error(\sprintf('Could not send the password recovery link via the Notification Center to "%s": %s', $user->username, $e->getMessage()), ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR), 'exception' => $e]);
+
             return false;
         }
 
