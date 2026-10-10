@@ -15,13 +15,12 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Code4Nix\UriSigner\UriSigner;
-use Contao\BackendTemplate;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Route('/_backend_password_recovery/confirm', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
@@ -49,10 +48,9 @@ class SendEmailConfirmController extends AbstractController
         $this->getContaoAdapter(System::class)->loadLanguageFile('default');
         $this->getContaoAdapter(System::class)->loadLanguageFile('modules');
 
-        $template = new BackendTemplate('be_password_recovery_confirm');
-        $template->backHref = $this->router->generate('contao_backend');
-        $this->addMoreDataToTemplate($template, $request, $this->framework);
-
-        return $template->getResponse();
+        return $this->render('@Contao/be_password_recovery_confirm.html.twig', [
+            ...$this->getLayoutData($request, $this->framework),
+            'backHref' => $this->router->generate('contao_backend'),
+        ]);
     }
 }

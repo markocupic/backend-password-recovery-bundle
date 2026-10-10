@@ -15,23 +15,28 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Contao\Backend;
-use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Util\LocaleUtil;
-use Contao\Environment;
 use Contao\Message;
 use Symfony\Component\HttpFoundation\Request;
 
 trait BackendTemplateTrait
 {
-    protected function addMoreDataToTemplate(BackendTemplate $template, Request $request, ContaoFramework $framework): void
+    /**
+     * Returns the variables of the "be_password_recovery_layout" template.
+     */
+    protected function getLayoutData(Request $request, ContaoFramework $framework): array
     {
-        $template->theme = $framework->getAdapter(Backend::class)->getTheme();
-        $template->messages = $framework->getAdapter(Message::class)->generate();
-        $template->base = $framework->getAdapter(Environment::class)->get('base');
-        $template->language = $framework->getAdapter(LocaleUtil::class)->formatAsLanguageTag($request->getLocale());
-        $template->host = $framework->getAdapter(Backend::class)->getDecodedHostname();
-        $template->charset = $framework->getAdapter(Config::class)->get('characterSet');
+        $backend = $framework->getAdapter(Backend::class);
+
+        return [
+            // Backend::getTheme() has been removed in Contao 6 (there is only one back end theme)
+            'theme' => method_exists(Backend::class, 'getTheme') ? $backend->getTheme() : null,
+            'messages' => $framework->getAdapter(Message::class)->generate(),
+            'language' => $framework->getAdapter(LocaleUtil::class)->formatAsLanguageTag($request->getLocale()),
+            'host' => $backend->getDecodedHostname(),
+            'charset' => $framework->getAdapter(Config::class)->get('characterSet') ?: 'UTF-8',
+        ];
     }
 }

@@ -23,9 +23,8 @@ class BackendPasswordRecoveryNotificationType implements NotificationTypeInterfa
 {
     public const NAME = 'backend_password_recovery';
 
-    public function __construct(
-        private readonly TokenDefinitionFactoryInterface $factory,
-    ) {
+    public function __construct(private readonly TokenDefinitionFactoryInterface $factory)
+    {
     }
 
     public function getName(): string

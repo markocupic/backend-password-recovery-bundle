@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Markocupic\BackendPasswordRecoveryBundle\Controller;
 
 use Code4Nix\UriSigner\UriSigner;
-use Contao\BackendTemplate;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
@@ -33,11 +32,10 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Terminal42\NotificationCenterBundle\NotificationCenter;
 
 #[Route('/_backend_password_recovery/form', name: self::ROUTE, defaults: ['_scope' => 'backend', '_token_check' => true])]
 class UserIdentifierFormController extends AbstractController
@@ -52,14 +50,14 @@ class UserIdentifierFormController extends AbstractController
         private readonly Connection $connection,
         private readonly ContaoFramework $framework,
         private readonly DefaultMailer $defaultMailer,
-        private readonly NC $nc,
-        private readonly NotificationCenter $notificationCenter,
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
         private readonly UriSigner $uriSigner,
         #[Autowire(param: 'markocupic_backend_password_recovery.token_lifetime')]
         private readonly int $tokenLifetime,
         private readonly LoggerInterface|null $contaoGeneralLogger = null,
+        // Not available if terminal42/notification_center is not installed
+        private readonly NC|null $nc = null,
     ) {
     }
 
@@ -79,11 +77,10 @@ class UserIdentifierFormController extends AbstractController
             return $this->handleFormSubmit($identifier);
         }
 
-        $template = new BackendTemplate('be_password_recovery_form');
-        $template->backHref = $this->router->generate('contao_backend');
-        $this->addMoreDataToTemplate($template, $request, $this->framework);
-
-        return $template->getResponse();
+        return $this->render('@Contao/be_password_recovery_form.html.twig', [
+            ...$this->getLayoutData($request, $this->framework),
+            'backHref' => $this->router->generate('contao_backend'),
+        ]);
     }
 
     private function handleFormSubmit(string $identifier): RedirectResponse
@@ -99,9 +96,9 @@ class UserIdentifierFormController extends AbstractController
             $user->save();
 
             $link = $this->generateLink($token);
-            $notificationIds = $this->getNotificationIds();
+            $notificationIds = null !== $this->nc ? $this->getNotificationIds() : [];
 
-            if (!empty($notificationIds)) {
+            if (null !== $this->nc && !empty($notificationIds)) {
                 $success = $this->nc->send($user, $link, $notificationIds);
             } else {
                 $success = $this->defaultMailer->send($user, $link);

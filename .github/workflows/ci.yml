@@ -15,62 +15,43 @@ jobs:
         steps:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.4
+                    coverage: none
 
             -   name: Checkout
-                uses: actions/checkout@v2
+                uses: actions/checkout@v4
 
             -   name: Install ecs
-                run: cd tools/ecs && composer install --no-interaction --no-suggest
+                run: composer update --working-dir=tools/ecs --no-interaction --no-progress
 
-            -   name: Run the CS fixer
-                run: composer cs-fixer
+            -   name: Check the coding style
+                run: composer cs-check
 
     tests:
-        name: PHP ${{ matrix.php }}
+        name: PHP ${{ matrix.php }}${{ matrix.dependencies == 'lowest' && ' --prefer-lowest' || '' }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                php: [ 8.2 ]
+                php: [ 8.4, 8.5 ]
+                dependencies: [ highest ]
+                include:
+                    -   php: 8.4
+                        dependencies: lowest
         steps:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php }}
+                    extensions: dom, fileinfo, filter, gd, hash, intl, json, mbstring, pcre, pdo_mysql, zlib
+                    coverage: none
 
             -   name: Checkout
-                uses: actions/checkout@v2
-
-            -   name: Install phpunit
-                run: cd tools/phpunit && composer install --no-interaction --no-suggest
+                uses: actions/checkout@v4
 
             -   name: Install the dependencies
-                run: composer install --no-interaction --no-suggest
-
-            -   name: Run the unit tests
-                run: composer unit-tests
-
-    prefer-lowest-tests:
-        name: PHP ${{ matrix.php }} --prefer-lowest
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                php: [ 8.2 ]
-        steps:
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ matrix.php }}
-
-            -   name: Checkout
-                uses: actions/checkout@v2
-
-            -   name: Install phpunit
-                run: cd tools/phpunit && composer install --no-interaction --no-suggest
-
-            -   name: Install the dependencies
-                run: composer update --prefer-lowest --prefer-stable --no-interaction --no-suggest
+                run: composer update --no-interaction --no-progress ${{ matrix.dependencies == 'lowest' && '--prefer-lowest --prefer-stable' || '' }}
 
             -   name: Run the unit tests
                 run: composer unit-tests

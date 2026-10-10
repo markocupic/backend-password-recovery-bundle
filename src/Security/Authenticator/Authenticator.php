@@ -128,9 +128,8 @@ class Authenticator extends AbstractAuthenticator
 
         $user = $userAdapter->findOneBy($where, [$username]);
 
-        // Reset pwResetToken, pwResetLifetime, etc.
-        // and set pwChange to '1'
-        // this is the way we can use the "ContaoBackend" controller from the Contao core
+        // Reset pwResetToken, pwResetLifetime, etc. and set pwChange to '1' this is the
+        // way we can use the "ContaoBackend" controller from the Contao core
         $user->pwResetToken = '';
         $user->pwResetLifetime = 0;
         $user->pwChange = '1';

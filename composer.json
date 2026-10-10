@@ -22,36 +22,46 @@
         "source": "https://github.com/markocupic/backend-password-recovery-bundle"
     },
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "code4nix/uri-signer": "^1.0",
-        "contao/core-bundle": "^5.3",
+        "contao/core-bundle": "^5.3 || ^6.0",
         "ramsey/uuid": "^4.0",
-        "scheb/2fa-bundle": "^6.0 || ^7.0",
-        "symfony/http-foundation": "^6.4 || ^7.1",
-        "symfony/dependency-injection": "^6.4 || ^7.0",
-        "symfony/security-bundle": "^6.4 || ^7.1",
-        "terminal42/notification_center": "^2.0"
+        "scheb/2fa-bundle": "^6.0 || ^7.0 || ^8.0",
+        "symfony/http-foundation": "^6.4 || ^7.1 || ^8.0",
+        "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
+        "symfony/security-bundle": "^6.4 || ^7.1 || ^8.0",
+        "symfony/routing": "^6.4 || ^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "contao/manager-plugin": "^2.13",
+        "contao/test-case": "^5.3 || ^6.0"
+    },
+    "suggest": {
+        "terminal42/notification_center": "Send the password recovery link via the Notification Center"
     },
     "autoload": {
         "psr-4": {
             "Markocupic\\BackendPasswordRecoveryBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Markocupic\\BackendPasswordRecoveryBundle\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "contao-manager-plugin": "Markocupic\\BackendPasswordRecoveryBundle\\ContaoManager\\Plugin"
     },
     "scripts": {
-        "cs-fixer": "@php tools/ecs/vendor/bin/ecs check config/ contao/ src/ tests/ --config tools/ecs/config.php --fix --ansi",
-        "unit-tests": "@php tools/phpunit/vendor/bin/phpunit -c tools/phpunit/phpunit.xml.dist"
+        "cs-fixer": "@php tools/ecs/vendor/bin/ecs check --config tools/ecs/config/default.php --fix --ansi",
+        "cs-check": "@php tools/ecs/vendor/bin/ecs check --config tools/ecs/config/default.php --ansi",
+        "unit-tests": "@php vendor/bin/phpunit --colors=always"
     },
     "config": {
         "allow-plugins": {
             "contao-components/installer": false,
             "contao/manager-plugin": false,
-            "php-http/discovery": false
+            "php-http/discovery": true
         }
-    },
-    "require-dev": {
-        "contao/manager-plugin": "^2.13"
     }
 }

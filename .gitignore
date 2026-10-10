@@ -1,5 +1,9 @@
+/.idea/
+/node_modules/
+/package-lock.json
 /vendor/
-/tools/*/vendor
 /composer.lock
-/.php-cs-fixer.cache
-/tools/phpunit/.phpunit.result.cache
+/tools/*/vendor/
+/tools/*/composer.lock
+/.phpunit.result.cache
+/.phpunit.cache/

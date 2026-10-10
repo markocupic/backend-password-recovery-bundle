@@ -14,10 +14,13 @@ declare(strict_types=1);
 
 namespace Markocupic\BackendPasswordRecoveryBundle\DependencyInjection;
 
+use Markocupic\BackendPasswordRecoveryBundle\NotificationType\BackendPasswordRecoveryNotificationType;
+use Markocupic\BackendPasswordRecoveryBundle\Notifier\NC;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Terminal42\NotificationCenterBundle\NotificationCenter;
 
 class MarkocupicBackendPasswordRecoveryExtension extends Extension
 {
@@ -32,6 +35,13 @@ class MarkocupicBackendPasswordRecoveryExtension extends Extension
         );
 
         $loader->load('services.yaml');
+
+        // terminal42/notification_center is optional. Without it, the password recovery
+        // link is sent with the default mailer.
+        if (!class_exists(NotificationCenter::class)) {
+            $container->removeDefinition(NC::class);
+            $container->removeDefinition(BackendPasswordRecoveryNotificationType::class);
+        }
 
         // Configuration
         $container->setParameter('markocupic_backend_password_recovery.token_lifetime', $config['token_lifetime']);

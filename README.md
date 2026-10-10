@@ -8,6 +8,12 @@ This plugin displays a “recover password button” **after** incorrect entry o
 By entering the user name or e-mail address, the user **is sent an e-mail with a link**.
 This allows the backend user to restore their password.
 
+## Requirements
+
+- PHP 8.4+
+- Contao 5.3 or Contao 6
+- Optional: [terminal42/notification_center](https://github.com/terminal42/contao-notification_center) 2.x
+
 ## Installation
 
 - On your console you can run `composer require markocupic/backend-password-recovery-bundle`
@@ -21,6 +27,8 @@ This allows the backend user to restore their password.
 | <img src="./docs/print_screen_1.png">                                          | <img src="./docs/print_screen_2.png">   | <img src="./docs/print_screen_3.png">                               |
 
 ## Notification Center
+
+The Notification Center is optional. Install it with `composer require terminal42/notification_center`, if you want to use it.
 
 If no notification of the ‘Type Backed user: Password recovery’ has been created, Contao will automatically send an email with the recovery link using the Symfony mailer.
 
